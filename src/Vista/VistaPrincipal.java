@@ -4,6 +4,25 @@
  */
 package Vista;
 
+import Controlador.ControladorPrincipal;
+import Modelo.ModeloPrincipal;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+
 /**
  *
  * @author diego
@@ -15,6 +34,49 @@ public class VistaPrincipal extends javax.swing.JFrame {
      */
     public VistaPrincipal() {
         initComponents();
+           ModeloPrincipal modelo = new ModeloPrincipal(this);
+        ControladorPrincipal controlador = new ControladorPrincipal(modelo);
+        setControlador(controlador);
+         setLocationRelativeTo(null);
+
+        if (!(tblResumen.getParent() instanceof JViewport)) {
+            JScrollPane scrollPane = new JScrollPane(tblResumen);
+            getContentPane().add(scrollPane, BorderLayout.CENTER);
+        }
+
+        JTableHeader header = tblResumen.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setBackground(new Color(46, 134, 171));
+        header.setForeground(Color.BLACK);
+
+        ((DefaultTableCellRenderer) header.getDefaultRenderer())
+                .setHorizontalAlignment(JLabel.CENTER);
+
+        tblResumen.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean seleccionado, boolean visto, int fila, int columna) {
+                Component c = super.getTableCellRendererComponent(table, value,
+                        seleccionado, visto, fila, columna);
+
+                if (fila % 2 == 0) {
+                    c.setBackground(new Color(240, 240, 240));
+                } else {
+                    c.setBackground(Color.WHITE);
+                }
+
+                if (seleccionado) {
+                    c.setBackground(new Color(200, 230, 255));
+                }
+
+                return c;
+            }
+        });
+
+        tblResumen.setShowGrid(true);
+        tblResumen.setGridColor(new Color(200, 200, 200));
+
+        header.repaint();
     }
 
     /**
@@ -26,14 +88,57 @@ public class VistaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu3 = new javax.swing.JMenu();
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
+        jOptionPane1 = new javax.swing.JOptionPane();
+        jMenuBar2 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        btnSalir = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblResumen = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        menuBar = new javax.swing.JMenuBar();
+        jMenu5 = new javax.swing.JMenu();
+        mntmAutobuses = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        mntmRutas = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        mntmConductores = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        mntmPasajeros = new javax.swing.JMenuItem();
+        jMenu6 = new javax.swing.JMenu();
+        mntmReporteV = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        mntmReporteC = new javax.swing.JMenuItem();
+        jMenu7 = new javax.swing.JMenu();
+        mntmManual = new javax.swing.JMenuItem();
+        mnBoletos = new javax.swing.JMenu();
+        mntmVenta = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        mntmConsultas = new javax.swing.JMenuItem();
+
+        jMenu3.setText("jMenu3");
+
+        jMenuItem1.setText("jMenuItem1");
+
+        jRadioButtonMenuItem1.setSelected(true);
+        jRadioButtonMenuItem1.setText("jRadioButtonMenuItem1");
+
+        jMenu1.setText("File");
+        jMenuBar2.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar2.add(jMenu2);
+
+        jMenuItem2.setText("jMenuItem2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 650));
@@ -42,139 +147,356 @@ public class VistaPrincipal extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(245, 245, 245));
 
-        jPanel3.setBackground(new java.awt.Color(46, 134, 171));
+        jPanel3.setBackground(new java.awt.Color(224, 224, 224));
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel3.setForeground(new java.awt.Color(214, 214, 214));
+
+        jLabel1.setText("Transportes.;.;..");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 890, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(43, 43, 43)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 830, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(158, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 126, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
-        jButton1.setBackground(new java.awt.Color(46, 134, 171));
-        jButton1.setText("jButton1");
+        btnSalir.setText("Salir");
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalirActionPerformed(evt);
+            }
+        });
 
-        jButton2.setBackground(new java.awt.Color(46, 134, 171));
-        jButton2.setText("jButton1");
+        jScrollPane2.setBackground(new java.awt.Color(204, 204, 204));
+        jScrollPane2.setForeground(new java.awt.Color(102, 102, 102));
 
-        jButton3.setBackground(new java.awt.Color(46, 134, 171));
-        jButton3.setText("jButton1");
+        tblResumen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tblResumen.setForeground(new java.awt.Color(102, 102, 102));
+        tblResumen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Codigo Bus", "Ruta", "Hora Salida", "Hora llegada", "Asientos disponibles", "Estado"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+            };
 
-        jButton4.setBackground(new java.awt.Color(46, 134, 171));
-        jButton4.setText("jButton1");
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        tblResumen.setCellSelectionEnabled(true);
+        tblResumen.setGridColor(new java.awt.Color(0, 0, 0));
+        tblResumen.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        tblResumen.setSelectionForeground(new java.awt.Color(204, 204, 204));
+        tblResumen.setShowGrid(true);
+        jScrollPane1.setViewportView(tblResumen);
 
-        jButton5.setBackground(new java.awt.Color(46, 134, 171));
-        jButton5.setText("jButton1");
-
-        jButton6.setBackground(new java.awt.Color(46, 134, 171));
-        jButton6.setText("jButton1");
+        jScrollPane2.setViewportView(jScrollPane1);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(117, 117, 117)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(96, 96, 96)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(42, 42, 42)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(102, 102, 102)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(96, 96, 96)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSalir))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
+                .addGap(14, 14, 14)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(128, 128, 128)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(170, 170, 170)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 146, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39)
+                .addComponent(btnSalir)
+                .addContainerGap())
         );
+
+        jButton2.setText("jButton2");
+
+        menuBar.setBackground(new java.awt.Color(153, 153, 153));
+        menuBar.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        menuBar.setForeground(new java.awt.Color(51, 51, 51));
+        menuBar.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        menuBar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        menuBar.setMaximumSize(new java.awt.Dimension(500, 32768));
+        menuBar.setMinimumSize(new java.awt.Dimension(500, 23));
+        menuBar.setPreferredSize(new java.awt.Dimension(500, 40));
+
+        jMenu5.setBackground(new java.awt.Color(255, 204, 255));
+        jMenu5.setForeground(new java.awt.Color(51, 51, 51));
+        jMenu5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/time-management_8123642.png"))); // NOI18N
+        jMenu5.setText(" Gestion");
+        jMenu5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jMenu5.setMaximumSize(new java.awt.Dimension(150, 32767));
+        jMenu5.setPreferredSize(new java.awt.Dimension(150, 31));
+
+        mntmAutobuses.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/bus (1).png"))); // NOI18N
+        mntmAutobuses.setText("  Autobuses");
+        mntmAutobuses.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mntmAutobusesActionPerformed(evt);
+            }
+        });
+        jMenu5.add(mntmAutobuses);
+        jMenu5.add(jSeparator1);
+
+        mntmRutas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/distance_4721181.png"))); // NOI18N
+        mntmRutas.setText("  Rutas");
+        mntmRutas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mntmRutasActionPerformed(evt);
+            }
+        });
+        jMenu5.add(mntmRutas);
+        jMenu5.add(jSeparator2);
+
+        mntmConductores.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/taxi-driver_1597373.png"))); // NOI18N
+        mntmConductores.setText("  Conductores");
+        jMenu5.add(mntmConductores);
+        jMenu5.add(jSeparator3);
+
+        mntmPasajeros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/woman_9434861.png"))); // NOI18N
+        mntmPasajeros.setText("  Pasajeros");
+        jMenu5.add(mntmPasajeros);
+
+        menuBar.add(jMenu5);
+
+        jMenu6.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jMenu6.setForeground(new java.awt.Color(51, 51, 51));
+        jMenu6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/business-report_8480222.png"))); // NOI18N
+        jMenu6.setText(" Reportes");
+        jMenu6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jMenu6.setMaximumSize(new java.awt.Dimension(150, 32767));
+        jMenu6.setMinimumSize(new java.awt.Dimension(90, 31));
+
+        mntmReporteV.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/tax_12487479.png"))); // NOI18N
+        mntmReporteV.setText("Reporte de Ventas");
+        jMenu6.add(mntmReporteV);
+        jMenu6.add(jSeparator5);
+
+        mntmReporteC.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/curriculum_1927501.png"))); // NOI18N
+        mntmReporteC.setText("Reporte Conductores");
+        jMenu6.add(mntmReporteC);
+
+        menuBar.add(jMenu6);
+
+        jMenu7.setForeground(new java.awt.Color(51, 51, 51));
+        jMenu7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/speech-bubble_5726828.png"))); // NOI18N
+        jMenu7.setText("  Ayuda");
+        jMenu7.setContentAreaFilled(false);
+        jMenu7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jMenu7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jMenu7.setMaximumSize(new java.awt.Dimension(150, 32767));
+        jMenu7.setPreferredSize(new java.awt.Dimension(150, 31));
+        jMenu7.setRolloverEnabled(false);
+
+        mntmManual.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/instruction-book_16939373.png"))); // NOI18N
+        mntmManual.setText(" Manual de Usuario");
+        jMenu7.add(mntmManual);
+
+        menuBar.add(jMenu7);
+
+        mnBoletos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/ticket_888629.png"))); // NOI18N
+        mnBoletos.setText(" Boletos");
+        mnBoletos.setMaximumSize(new java.awt.Dimension(150, 32767));
+
+        mntmVenta.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/bill_2325648.png"))); // NOI18N
+        mntmVenta.setText(" Venta");
+        mnBoletos.add(mntmVenta);
+        mnBoletos.add(jSeparator4);
+
+        mntmConsultas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Multimedia/interview_15441435.png"))); // NOI18N
+        mntmConsultas.setText("Consultas");
+        mnBoletos.add(mntmConsultas);
+
+        menuBar.add(mnBoletos);
+
+        setJMenuBar(menuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(60, 60, 60)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+       dispose();
+    }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void mntmRutasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mntmRutasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mntmRutasActionPerformed
+
+    private void mntmAutobusesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mntmAutobusesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mntmAutobusesActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
+        
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+            // 1. Verificar que existen LookAndFeels instalados
+            javax.swing.UIManager.LookAndFeelInfo[] looks = javax.swing.UIManager.getInstalledLookAndFeels();
+            if (looks == null || looks.length == 0) {
+                System.err.println("No se encontraron LookAndFeels instalados");
+                // Usar el look and feel por defecto del sistema
+                javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+            } else {
+                // 2. Buscar Nimbus
+                boolean nimbusFound = false;
+                for (javax.swing.UIManager.LookAndFeelInfo info : looks) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        nimbusFound = true;
+                        break;
+                    }
+                }
+
+                // 3. Fallback si Nimbus no está disponible
+                if (!nimbusFound) {
+                    javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
+                    System.out.println("Nimbus no encontrado, usando LookAndFeel por defecto");
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(VistaPrincipal.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Error configurando LookAndFeel", ex);
+
+            // Fallback extremo
+            try {
+                javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                // Si todo falla, la aplicación correrá con el look and feel básico
+            }
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VistaPrincipal().setVisible(true);
+                VistaPrincipal vistaP = new VistaPrincipal();
+                vistaP.personalizarMenu();
+                vistaP.setVisible(true);
+               
+
             }
         });
+
     }
 
+    public void personalizarMenu() {
+        Font fuenteMenu = new Font("Segoe UI", Font.PLAIN, 16);
+        menuBar.setFont(fuenteMenu); // Reemplaza con el nombre real de tu JMenuBar
+
+        for (int i = 0; i < menuBar.getMenuCount(); i++) {
+            JMenu menu = menuBar.getMenu(i);
+            menu.setFont(fuenteMenu);
+            menu.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20)); // Espaciado interno
+        }
+
+        menuBar.setPreferredSize(new Dimension(menuBar.getWidth(), 40)); // Ajustar altura
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnSalir;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    public javax.swing.JMenu jMenu5;
+    public javax.swing.JMenu jMenu6;
+    public javax.swing.JMenu jMenu7;
+    private javax.swing.JMenuBar jMenuBar2;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    public javax.swing.JMenuBar menuBar;
+    public javax.swing.JMenu mnBoletos;
+    public javax.swing.JMenuItem mntmAutobuses;
+    public javax.swing.JMenuItem mntmConductores;
+    public javax.swing.JMenuItem mntmConsultas;
+    public javax.swing.JMenuItem mntmManual;
+    public javax.swing.JMenuItem mntmPasajeros;
+    public javax.swing.JMenuItem mntmReporteC;
+    public javax.swing.JMenuItem mntmReporteV;
+    public javax.swing.JMenuItem mntmRutas;
+    public javax.swing.JMenuItem mntmVenta;
+    public javax.swing.JTable tblResumen;
     // End of variables declaration//GEN-END:variables
+
+    public void setControlador(ControladorPrincipal controlador) {
+    
+    mntmAutobuses.addActionListener(controlador);
+    mntmConductores.addActionListener(controlador);
+    mntmConsultas.addActionListener(controlador);
+    mntmManual.addActionListener(controlador);
+    mntmRutas.addActionListener(controlador);
+    mntmVenta.addActionListener(controlador);
+    mntmReporteV.addActionListener(controlador);  
+    mntmReporteC.addActionListener(controlador);
+    mntmPasajeros.addActionListener(controlador);
+    }
+
 }
