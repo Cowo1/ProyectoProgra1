@@ -4,7 +4,6 @@
  */
 package Controlador;
 
-import Arvhivos.ArchivoBuses;
 import Modelo.ModeloBuses;
 import Vista.VistaBuses;
 import java.awt.event.ActionEvent;
@@ -12,13 +11,9 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -50,15 +45,9 @@ public class ControladorBuses implements ActionListener {
             eliminar();
         } else if (e.getSource() == modelo.getVista().btnLimpiar) {
             limpiar();
+        }else if (e.getSource() == modelo.getVista().btnEliminarF) {
+           eliminarFila();
         }
-        
-        
-        
-        
-        
-        
-        
-        
     }
     
     
@@ -182,6 +171,54 @@ public class ControladorBuses implements ActionListener {
 
         
     }
+   public void eliminarFila() {
+    int filaS = modelo.getVista().tblBuses.getSelectedRow();
+
+    if (filaS == -1) {
+        JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar.");
+        return;
+    }
+
+    String placaEliminar = modelo.getVista().tblBuses.getValueAt(filaS, 0).toString();
+
+    File archivoTemporal = new File("buses_temp.txt");
+    boolean eliminado = false;
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivo));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemporal));
+    ) {
+        String linea;
+
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+
+            if (datos.length > 0 && datos[0].trim().equals(placaEliminar)) {
+                eliminado = true;
+                continue; 
+            }
+
+            writer.write(linea);
+            writer.newLine();
+        }
+        
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar el autobus.");
+        return;
+    }
+
+    if (archivo.delete() && archivoTemporal.renameTo(archivo)) {
+        if (eliminado) {
+            JOptionPane.showMessageDialog(null, "Autobus eliminado correctamente.");
+            cargarTabla(); 
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró el bus.");
+        }
+    } else {
+        JOptionPane.showMessageDialog(null, "Error al reemplazar el archivo.");
+    }
+}
     
    
 }
