@@ -83,7 +83,7 @@ public class ControladorAsignacion implements ActionListener {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     Date FechaL = sdf.parse(fechaV);
 
-                    if (estado.equalsIgnoreCase("Disponible")|| estado.equalsIgnoreCase("En ruta") && FechaL.after(new Date())) {
+                    if (estado.equalsIgnoreCase("Disponible")|| estado.equalsIgnoreCase("Asignado") && FechaL.after(new Date())) {
                         model.addRow(new Object[]{
                             datos[0].trim(),
                             datos[1].trim(),
@@ -137,8 +137,8 @@ public class ControladorAsignacion implements ActionListener {
             return;
         }
 
-        actualizarConductor(codigo, "En ruta");
-        actualizarBus(placa, "En ruta");
+        actualizarConductor(codigo, "Asignado");
+        actualizarBus(placa, "Asignado");
 
         JOptionPane.showMessageDialog(null, "Conductor asignado correctamente.");
         cargarConductores();

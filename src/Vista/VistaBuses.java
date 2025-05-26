@@ -75,6 +75,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
 
         jPanel1.setBackground(new java.awt.Color(153, 153, 153));
 
+        btnSalir.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnSalir.setText("Salir");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -137,7 +138,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel14.setText("Estado");
 
-        cbEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disponible", "En ruta", "Inactivo" }));
+        cbEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disponible", "Asignado", "En ruta", "Inactivo" }));
         cbEstado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbEstadoActionPerformed(evt);
@@ -381,8 +382,10 @@ VistaAsignarConductor va = new VistaAsignarConductor();
                         .addContainerGap(41, Short.MAX_VALUE))))
         );
 
+        btnEliminarF.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEliminarF.setText("Eliminar Fila");
 
+        btnAsignarC.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnAsignarC.setText("Asignar Conductor");
         btnAsignarC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -428,7 +431,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                         .addComponent(btnSalir)
                         .addGap(18, 18, 18))
                     .addGroup(jPanel1Layout.createSequentialGroup()

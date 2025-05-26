@@ -85,7 +85,7 @@
                   <Component id="jScrollPane1" min="-2" pref="255" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <EmptySpace pref="11" max="32767" attributes="0"/>
+                          <EmptySpace pref="7" max="32767" attributes="0"/>
                           <Component id="btnSalir" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       </Group>
@@ -105,6 +105,9 @@
       <SubComponents>
         <Component class="javax.swing.JButton" name="btnSalir">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Salir"/>
           </Properties>
           <Events>
@@ -361,10 +364,11 @@
             <Component class="javax.swing.JComboBox" name="cbEstado">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="3">
+                  <StringArray count="4">
                     <StringItem index="0" value="Disponible"/>
-                    <StringItem index="1" value="En ruta"/>
-                    <StringItem index="2" value="Inactivo"/>
+                    <StringItem index="1" value="Asignado"/>
+                    <StringItem index="2" value="En ruta"/>
+                    <StringItem index="3" value="Inactivo"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -697,6 +701,9 @@
         </Container>
         <Component class="javax.swing.JButton" name="btnEliminarF">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Eliminar Fila"/>
           </Properties>
           <AuxValues>
@@ -705,6 +712,9 @@
         </Component>
         <Component class="javax.swing.JButton" name="btnAsignarC">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="1"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Asignar Conductor"/>
           </Properties>
           <Events>

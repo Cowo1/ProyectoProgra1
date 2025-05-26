@@ -1,4 +1,3 @@
-asd236         |         2025 mercedes         |         30         | En ruta
-fsdf        |        sdfsdf        |        40        |      Disponible
-123abc     |     2025 mercedes     |     40     |   Disponible
-     |          |     0     |     Disponible
+asd236                    |                    2025 mercedes                    |                    30                    |      Asignado
+fsdf                   |                   sdfsdf                   |                   40                   | Asignado
+123abc                |                2025 mercedes                |                40                |              Disponible

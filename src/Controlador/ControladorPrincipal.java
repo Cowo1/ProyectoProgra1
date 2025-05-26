@@ -12,6 +12,7 @@ import Vista.VistaConsultas;
 import Vista.VistaManual;
 import Vista.VistaPasajeros;
 import Vista.VistaReportes;
+import Vista.VistaReportesV;
 import Vista.VistaRutas;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,8 +58,13 @@ public class ControladorPrincipal implements ActionListener, MouseListener {
             modelo.getVista().dispose();
         }
         else if(e.getSource().equals(modelo.getVista().mntmReporteV)){
-            VistaReportes vReportes = new VistaReportes();
-            vReportes.setVisible(true);
+            VistaReportesV vReportesv = new VistaReportesV();
+            vReportesv.setVisible(true);
+            modelo.getVista().dispose();
+        }
+         else if(e.getSource().equals(modelo.getVista().mntmReporteC)){
+            VistaReportes vReportesC = new VistaReportes();
+            vReportesC.setVisible(true);
             modelo.getVista().dispose();
         }
         else if(e.getSource().equals(modelo.getVista().mntmManual)){

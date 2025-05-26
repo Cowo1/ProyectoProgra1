@@ -4,10 +4,28 @@
  */
 package Modelo;
 
+import Vista.VistaReportes;
+
 /**
  *
  * @author diego
  */
 public class ModeloReportes {
+    private VistaReportes vista;
+
+    public ModeloReportes() {
+    }
+
+    public ModeloReportes(VistaReportes vista) {
+        this.vista = vista;
+    }
+
+    public VistaReportes getVista() {
+        return vista;
+    }
+
+    public void setVista(VistaReportes vista) {
+        this.vista = vista;
+    }
     
 }

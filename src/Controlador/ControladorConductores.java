@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author diego
  */
+
 public class ControladorConductores implements ActionListener {
 
     private ModeloConductores modelo;
@@ -36,7 +37,7 @@ public class ControladorConductores implements ActionListener {
         modelo.getVista().btnBuscar.addActionListener(this);
         modelo.getVista().btnEliminar.addActionListener(this);
         modelo.getVista().btnLimpiar.addActionListener(this);
-          verificarLicenciaV();
+        verificarLicenciaV();
         cargarTabla();
     }
 
@@ -48,8 +49,7 @@ public class ControladorConductores implements ActionListener {
             cargarTabla();
             
         }else if(e.getSource() == modelo.getVista().btnBuscar){
-            buscar();
-            
+            buscar();  
         }else if(e.getSource() == modelo.getVista().btnEliminar){
         eliminar();
         }else if(e.getSource() == modelo.getVista().btnLimpiar){
@@ -60,6 +60,7 @@ public class ControladorConductores implements ActionListener {
     }
 
     public void guardar() {
+   
         String codigo = modelo.getVista().txtCodigo.getText().trim();
        String licencia = modelo.getVista().txtLicencia.getText().trim();
         String dpi = modelo.getVista().txtDPI.getText().trim();
@@ -82,10 +83,13 @@ public class ControladorConductores implements ActionListener {
     JOptionPane.showMessageDialog(null, "Debe seleccionar ambas fechas (ingreso y vencimiento).");
     return;
 }
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(archivo,true))){
-              writer.write(codigo + " | " + nombre + " | " + dpi + " | " + telefono + " | " + direccion + " | "
-                       + licencia + " | " + tipoLicencia + " | " + estado + " | " + fechaIngreso + " | " + fechaVencimiento);
-            writer.newLine();
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
+       
+        String linea = String.format("%-8s | %-20s | %-12s | %-10s | %-25s | %-10s | %-15s | %-10s | %-12s | %-12s",
+            codigo, nombre, dpi, telefono, direccion, licencia, tipoLicencia, estado, fechaIngreso, fechaVencimiento);
+        
+        writer.write(linea);
+        writer.newLine();
             
             JOptionPane.showMessageDialog(null,"Conductor guardado correctamente");
             limpiar();
@@ -311,4 +315,6 @@ public class ControladorConductores implements ActionListener {
         return false;
     }
 }
+    
+    
 }
