@@ -15,6 +15,7 @@ public class VistaReportesV extends javax.swing.JFrame {
      */
     public VistaReportesV() {
         initComponents();
+          setLocationRelativeTo(null);
     }
 
     /**

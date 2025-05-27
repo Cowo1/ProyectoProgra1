@@ -33,42 +33,40 @@ public class ControladorAsignacion implements ActionListener {
 
     private ModeloAsignacion modelo;
 
-    private VistaAsignarConductor vista;
     private File archivoConductores = new File("conductores.txt");
     private File archivoBuses = new File("buses.txt");
     private File archivoAsignaciones = new File("asignaciones.txt");
 
     public ControladorAsignacion(ModeloAsignacion modelo) {
-        modelo.getVista().tblConductoresA.getSelectionModel().addListSelectionListener(e -> {
-    int fila = modelo.getVista().tblConductoresA.getSelectedRow();
-    if (fila != -1) {
-        String codigo = modelo.getVista().tblConductoresA.getValueAt(fila, 0).toString();
-        modelo.getVista().txtCodigo.setText(codigo);
-    }
-});
-        modelo.getVista().cmbBusesA.addItemListener(new ItemListener() {
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-            String placaS = e.getItem().toString();
-            mostrarDatosB(placaS);
-        }
-    }
-});
-         this.modelo = modelo;
-        this.vista = modelo.getVista();
-         cargarBuses();
-         cargarConductores();
-       
-       
-       
-        vista.btnAsignar.addActionListener(this);
-        vista.btnDesasignar.addActionListener(this);
+        this.modelo = modelo;
 
+        modelo.getVista().tblConductoresA.getSelectionModel().addListSelectionListener(e -> {
+            int fila = modelo.getVista().tblConductoresA.getSelectedRow();
+            if (fila != -1) {
+                String codigo = modelo.getVista().tblConductoresA.getValueAt(fila, 0).toString();
+                modelo.getVista().txtCodigo.setText(codigo);
+            }
+        });
+
+        modelo.getVista().cmbBusesA.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String placaS = e.getItem().toString();
+                    mostrarDatosB(placaS);
+                }
+            }
+        });
+
+        cargarBuses();
+        cargarConductores();
+
+        modelo.getVista().btnAsignar.addActionListener(this);
+        modelo.getVista().btnDesasignar.addActionListener(this);
     }
 
     public void cargarConductores() {
-        DefaultTableModel model = (DefaultTableModel) vista.tblConductoresA.getModel();
+        DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConductoresA.getModel();
         model.setRowCount(0);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoConductores))) {
@@ -83,7 +81,7 @@ public class ControladorAsignacion implements ActionListener {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     Date FechaL = sdf.parse(fechaV);
 
-                    if (estado.equalsIgnoreCase("Disponible")|| estado.equalsIgnoreCase("Asignado") && FechaL.after(new Date())) {
+                    if (estado.equalsIgnoreCase("Disponible") || estado.equalsIgnoreCase("Asignado") && FechaL.after(new Date())) {
                         model.addRow(new Object[]{
                             datos[0].trim(),
                             datos[1].trim(),
@@ -101,14 +99,14 @@ public class ControladorAsignacion implements ActionListener {
     }
 
     public void cargarBuses() {
-        vista.cmbBusesA.removeAllItems();
+        modelo.getVista().cmbBusesA.removeAllItems();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoBuses))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
-                if (datos.length >= 4 && datos[3].trim().equalsIgnoreCase("Disponible")|| datos[3].trim().equalsIgnoreCase("En ruta")) {
-                    vista.cmbBusesA.addItem(datos[0].trim());
+                if (datos.length >= 4 && datos[3].trim().equalsIgnoreCase("Disponible") || datos[3].trim().equalsIgnoreCase("En ruta")) {
+                    modelo.getVista().cmbBusesA.addItem(datos[0].trim());
                 }
             }
         } catch (IOException ex) {
@@ -117,16 +115,16 @@ public class ControladorAsignacion implements ActionListener {
     }
 
     public void asignarConductor() {
-        int fila = vista.tblConductoresA.getSelectedRow();
-        String placa = (String) vista.cmbBusesA.getSelectedItem();
+        int fila = modelo.getVista().tblConductoresA.getSelectedRow();
+        String placa = (String) modelo.getVista().cmbBusesA.getSelectedItem();
 
         if (fila == -1 || placa == null) {
             JOptionPane.showMessageDialog(null, "Seleccione un conductor y un autobús.");
             return;
         }
 
-        String codigo = vista.tblConductoresA.getValueAt(fila, 0).toString();
-        String nombre = vista.tblConductoresA.getValueAt(fila, 1).toString();
+        String codigo = modelo.getVista().tblConductoresA.getValueAt(fila, 0).toString();
+        String nombre = modelo.getVista().tblConductoresA.getValueAt(fila, 1).toString();
         String fechaAsignacion = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivoAsignaciones, true))) {
@@ -146,8 +144,8 @@ public class ControladorAsignacion implements ActionListener {
     }
 
     public void desasignarConductor() {
-        String codigo = vista.txtCodigo.getText().trim();
-        String placa = (String) vista.cmbBusesA.getSelectedItem();
+        String codigo = modelo.getVista().txtCodigo.getText().trim();
+        String placa = (String) modelo.getVista().cmbBusesA.getSelectedItem();
 
         if (codigo.isEmpty() || placa == null) {
             JOptionPane.showMessageDialog(null, "Ingrese DPI del conductor y seleccione un autobús.");
@@ -167,7 +165,8 @@ public class ControladorAsignacion implements ActionListener {
         File temporal = new File("conductoresTemp.txt");
 
         try (
-                BufferedReader reader = new BufferedReader(new FileReader(archivoConductores)); BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))) {
+                BufferedReader reader = new BufferedReader(new FileReader(archivoConductores));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
@@ -189,12 +188,13 @@ public class ControladorAsignacion implements ActionListener {
         File temporal = new File("busesTemp.txt");
 
         try (
-                BufferedReader reader = new BufferedReader(new FileReader(archivoBuses)); BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))) {
+                BufferedReader reader = new BufferedReader(new FileReader(archivoBuses));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
                 if (datos.length >= 4 && datos[0].trim().equals(placa)) {
-                    datos[3] = nuevoE; 
+                    datos[3] = nuevoE;
                 }
                 writer.write(String.join(" | ", datos));
                 writer.newLine();
@@ -211,7 +211,8 @@ public class ControladorAsignacion implements ActionListener {
         File temporal = new File("asignacionesTemp.txt");
 
         try (
-                BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones)); BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))) {
+                BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
@@ -227,36 +228,35 @@ public class ControladorAsignacion implements ActionListener {
         archivoAsignaciones.delete();
         temporal.renameTo(archivoAsignaciones);
     }
+
     public void mostrarDatosB(String placa) {
-    try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
-        String linea;
-        while ((linea = reader.readLine()) != null) {
-            String[] datos = linea.split("\\|");
-            if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placa)) {
-              
-                modelo.getVista().txtModelo.setText(datos[1].trim());
-                modelo.getVista().txtCapacidad.setText(datos[2].trim());
-                return;
+        try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placa)) {
+
+                    modelo.getVista().txtModelo.setText(datos[1].trim());
+                    modelo.getVista().txtCapacidad.setText(datos[2].trim());
+                    return;
+                }
             }
+
+            modelo.getVista().txtModelo.setText("");
+            modelo.getVista().txtCapacidad.setText("");
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al buscar los datos del autobús.");
         }
-
-        // Si no encuentra el bus, limpia los campos
-        modelo.getVista().txtModelo.setText("");
-        modelo.getVista().txtCapacidad.setText("");
-
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(null, "Error al buscar los datos del autobús.");
     }
-}
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == modelo.getVista().btnAsignar) {
             asignarConductor();
-        } else if (e.getSource() == vista.btnDesasignar) {
+        } else if (e.getSource() == modelo.getVista().btnDesasignar) {
             desasignarConductor();
         }
-
     }
 }
+

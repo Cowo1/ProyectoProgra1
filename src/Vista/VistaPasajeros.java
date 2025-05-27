@@ -16,6 +16,7 @@ VistaPrincipal vp = new VistaPrincipal();
      */
     public VistaPasajeros() {
         initComponents();
+          setLocationRelativeTo(null);
     }
 
     /**

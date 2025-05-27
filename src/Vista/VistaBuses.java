@@ -22,6 +22,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
         ModeloBuses modelo = new ModeloBuses(this);
         ControladorBuses controlador = new ControladorBuses(modelo);
         setControlador(controlador);
+          setLocationRelativeTo(null);
     }
 
     /**

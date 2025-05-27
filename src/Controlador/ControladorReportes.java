@@ -86,7 +86,7 @@ model.setColumnIdentifiers(columnas);
     };
     logger.info("Iniciando exportación a excel");
     
-    // Configurar fecha y ruta
+  
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String rutaBase = "C:\\Users\\diego\\OneDrive\\Escritorio\\Reportes Transportes\\Reportes Conductores\\";
     String nombreArchivo = "Reporte Conductores (" + sdf.format(new Date()) + ").xlsx";
@@ -94,7 +94,7 @@ model.setColumnIdentifiers(columnas);
     try (BufferedReader reader = new BufferedReader(new FileReader(archivoConductores));
          XSSFWorkbook workbook = new XSSFWorkbook()) {
         
-        // Crear directorio si no existe
+      
         File directorio = new File(rutaBase);
         if (!directorio.exists()) {
             directorio.mkdirs();
@@ -102,30 +102,29 @@ model.setColumnIdentifiers(columnas);
         
         XSSFSheet sheet = workbook.createSheet("Conductores");
         
-        // Crear encabezado
+       
         Row header = sheet.createRow(0);
         for (int i = 0; i < columnas.length; i++) {
             header.createCell(i).setCellValue(columnas[i]);
         }
         
-        // Procesar datos - versión mejorada
+       
         String linea;
         int rowI = 1;
         int cuentaLinea = 0;
         
         while ((linea = reader.readLine()) != null) {
             cuentaLinea++;
-            // Saltar líneas vacías
+            
             if (linea.trim().isEmpty()) continue;
             
-            // Versión más robusta del split
-            String[] datos = linea.split("\\s*\\|\\s*", -1); // El -1 mantiene campos vacíos
             
-            // Asegurar que tenemos suficientes columnas
+            String[] datos = linea.split("\\s*\\|\\s*", -1); 
+            
+      
             if (datos.length >= columnas.length) {
                 Row row = sheet.createRow(rowI++);
                 for (int i = 0; i < columnas.length; i++) {
-                    // Manejar casos donde datos[i] podría no existir
                     String valor = (i < datos.length) ? datos[i].trim() : "";
                     row.createCell(i).setCellValue(valor);
                 }
@@ -134,12 +133,12 @@ model.setColumnIdentifiers(columnas);
             }
         }
         
-        // Autoajustar columnas
+       
         for (int i = 0; i < columnas.length; i++) {
             sheet.autoSizeColumn(i);
         }
         
-        // Guardar archivo
+        
         File archivo = new File(directorio, nombreArchivo);
         try (FileOutputStream out = new FileOutputStream(archivo)) {
             workbook.write(out);

@@ -21,6 +21,7 @@ VistaPrincipal vp = new VistaPrincipal();
          ModeloAsignacion modelo = new ModeloAsignacion(this);
         ControladorAsignacion controlador = new ControladorAsignacion(modelo);
         setControlador(controlador);
+          setLocationRelativeTo(null);
     }
 
     /**
