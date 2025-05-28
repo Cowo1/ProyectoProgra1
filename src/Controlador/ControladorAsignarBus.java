@@ -41,6 +41,7 @@ public class ControladorAsignarBus implements ActionListener {
                 mostrarDatosBus(e.getItem().toString());
             }
         });
+        modelo.getVista().btnDesasignar.addActionListener(e -> desasignarBusDeRuta());
 
         modelo.getVista().btnAsignar.addActionListener(this);
     }
@@ -199,40 +200,144 @@ public class ControladorAsignarBus implements ActionListener {
         temp.renameTo(archivoBuses);
     }
 
-    public void actualizarEstadoConductor(String placaBus) {
-        String codigo = "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
+   public void actualizarEstadoConductor(String placaBus) {
+    String codigo = "";
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 3 && datos[2].trim().equals(placaBus)) {
+                codigo = datos[0].trim();
+                break;
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al buscar conductor asignado");
+    }
+
+    if (!codigo.isEmpty()) {
+        File temp = new File("conductoresTemp.txt");
+        try (BufferedReader reader = new BufferedReader(new FileReader("conductores.txt"));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
-                if (datos[2].trim().equals(placaBus)) {
-                    codigo = datos[0].trim();
-                    break;
+                if (datos.length >= 8 && datos[0].trim().equals(codigo)) {
+                    datos[7] = "Asignado";
                 }
+                writer.write(String.join(" | ", datos));
+                writer.newLine();
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error al buscar conductor asignado");
+            JOptionPane.showMessageDialog(null, "Error al actualizar conductor");
         }
-
-        if (!codigo.isEmpty()) {
-            File temp = new File("conductoresTemp.txt");
-            try (BufferedReader reader = new BufferedReader(new FileReader("conductores.txt"));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
-                String linea;
-                while ((linea = reader.readLine()) != null) {
-                    String[] datos = linea.split("\\|");
-                    if (datos[0].trim().equals(codigo)) {
-                        datos[7] = "Asignado";
-                    }
-                    writer.write(String.join(" | ", datos));
-                    writer.newLine();
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error al actualizar conductor");
-            }
-            new File("conductores.txt").delete();
-            temp.renameTo(new File("conductores.txt"));
-        }
+        new File("conductores.txt").delete();
+        temp.renameTo(new File("conductores.txt"));
     }
+}
+
+    public void desasignarBusDeRuta() {
+    String idRuta = modelo.getVista().txtCodigoR.getText().trim();
+
+    if (idRuta.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Seleccione una ruta para desasignar el bus.");
+        return;
+    }
+
+    File archivoTemp = new File("asignacion_ruta_temp.txt");
+    File archivoDesasignaciones = new File("desasignacion_buses.txt");
+    boolean encontrado = false;
+    String lineaEliminada = "";
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivoAsignRuta));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemp));
+        BufferedWriter writerDesasignacion = new BufferedWriter(new FileWriter(archivoDesasignaciones, true))
+    ) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 2 && datos[0].trim().equals(idRuta)) {
+                encontrado = true;
+                lineaEliminada = linea.trim();
+                // Guardar en desasignaciones con fecha
+                String fecha = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                writerDesasignacion.write(linea.trim() + " | " + fecha);
+                writerDesasignacion.newLine();
+                continue;
+            }
+            writer.write(linea);
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al procesar la desasignación de ruta.");
+        return;
+    }
+
+    if (!encontrado) {
+        JOptionPane.showMessageDialog(null, "No se encontró una asignación para esa ruta.");
+        return;
+    }
+
+    if (archivoAsignRuta.delete() && archivoTemp.renameTo(archivoAsignRuta)) {
+        String placaBus = obtenerPlacaDesdeAsignacion(lineaEliminada);
+        actualizarEstadoRutaDesasignada(idRuta);
+        actualizarEstadoBusDesasignado(placaBus);
+
+        JOptionPane.showMessageDialog(null, "Bus desasignado correctamente de la ruta.");
+        cargarRutas();
+        cargarBuses();
+    } else {
+        JOptionPane.showMessageDialog(null, "Error al actualizar las asignaciones.");
+    }
+}
+private String obtenerPlacaDesdeAsignacion(String linea) {
+    String[] datos = linea.split("\\|");
+    if (datos.length >= 2) {
+        return datos[1].trim();
+    }
+    return "";
+}
+
+private void actualizarEstadoRutaDesasignada(String idRuta) {
+    File temp = new File("rutas_temp.txt");
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas));
+         BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 6 && datos[0].trim().equals(idRuta)) {
+                datos[5] = "Activa";
+            }
+            writer.write(String.join(" | ", datos));
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al actualizar estado de ruta.");
+    }
+    archivoRutas.delete();
+    temp.renameTo(archivoRutas);
+}
+
+private void actualizarEstadoBusDesasignado(String placa) {
+    File temp = new File("buses_temp.txt");
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoBuses));
+         BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 4 && datos[0].trim().equals(placa)) {
+                datos[3] = "Asignado"; // Vuelve a estado de asignado, pero no está en ruta
+            }
+            writer.write(String.join(" | ", datos));
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al actualizar estado del bus.");
+    }
+    archivoBuses.delete();
+    temp.renameTo(archivoBuses);
+}
+
 }
 
