@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -40,13 +41,24 @@ public class ControladorAsignacion implements ActionListener {
     public ControladorAsignacion(ModeloAsignacion modelo) {
         this.modelo = modelo;
 
-        modelo.getVista().tblConductoresA.getSelectionModel().addListSelectionListener(e -> {
-            int fila = modelo.getVista().tblConductoresA.getSelectedRow();
-            if (fila != -1) {
-                String codigo = modelo.getVista().tblConductoresA.getValueAt(fila, 0).toString();
-                modelo.getVista().txtCodigo.setText(codigo);
-            }
-        });
+       modelo.getVista().tblConductoresA.getSelectionModel().addListSelectionListener(e -> {
+    int fila = modelo.getVista().tblConductoresA.getSelectedRow();
+    if (fila != -1) {
+        String codigo = modelo.getVista().tblConductoresA.getValueAt(fila, 0).toString();
+        modelo.getVista().txtCodigo.setText(codigo);
+
+        // Buscar en archivo de asignaciones
+        String placaAsignada = obtenerBusAsignado(codigo);
+        if (placaAsignada != null) {
+            modelo.getVista().txtPlacaA.setText(placaAsignada);
+        } else {
+            modelo.getVista().txtPlacaA.setText("Sin asignación");
+        }
+    }
+});
+
+        
+   
 
         modelo.getVista().cmbBusesA.addItemListener(new ItemListener() {
             @Override
@@ -64,7 +76,7 @@ public class ControladorAsignacion implements ActionListener {
         modelo.getVista().btnAsignar.addActionListener(this);
         modelo.getVista().btnDesasignar.addActionListener(this);
     }
-
+                
     public void cargarConductores() {
         DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConductoresA.getModel();
         model.setRowCount(0);
@@ -141,25 +153,65 @@ public class ControladorAsignacion implements ActionListener {
         JOptionPane.showMessageDialog(null, "Conductor asignado correctamente.");
         cargarConductores();
         cargarBuses();
+        limpiar();
     }
 
     public void desasignarConductor() {
-        String codigo = modelo.getVista().txtCodigo.getText().trim();
-        String placa = (String) modelo.getVista().cmbBusesA.getSelectedItem();
+    String codigo = modelo.getVista().txtCodigo.getText().trim();
+    String placa = modelo.getVista().txtPlacaA.getText().trim();
 
-        if (codigo.isEmpty() || placa == null) {
-            JOptionPane.showMessageDialog(null, "Ingrese DPI del conductor y seleccione un autobús.");
-            return;
+    if (codigo.isEmpty() || placa.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Ingrese el código del conductor y seleccione un autobús.");
+        return;
+    }
+
+    if (placa.equalsIgnoreCase("Sin asignación") || placa.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Este conductor no tiene un bus asignado.");
+        return;
+    }
+
+    // Paso 1: mover línea de asignaciones.txt a desasignaciones.txt
+    File archivoTemporal = new File("asignacionesTemp.txt");
+    File archivoAsignaciones = new File("asignaciones.txt");
+    File archivoDesasignaciones = new File("desasignaciones.txt");
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemporal));
+        BufferedWriter writerDesasignaciones = new BufferedWriter(new FileWriter(archivoDesasignaciones, true));
+    ) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 3 && datos[0].trim().equals(codigo)) {
+                // Es la asignación a eliminar, la guardamos en desasignaciones.txt
+                writerDesasignaciones.write(linea + " | " + new SimpleDateFormat("yyyy-MM-dd").format(new Date())); // agregamos fecha de desasignación
+                writerDesasignaciones.newLine();
+                continue; // no escribir en el nuevo archivo
+            }
+            writer.write(linea);
+            writer.newLine();
         }
 
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al procesar desasignación: " + e.getMessage());
+        return;
+    }
+
+    // Reemplazar archivo original
+    if (archivoAsignaciones.delete() && archivoTemporal.renameTo(archivoAsignaciones)) {
         actualizarConductor(codigo, "Disponible");
         actualizarBus(placa, "Disponible");
-        eliminarAsignacion(codigo);
 
         JOptionPane.showMessageDialog(null, "Conductor desasignado correctamente.");
         cargarConductores();
         cargarBuses();
+        limpiar();
+    } else {
+        JOptionPane.showMessageDialog(null, "Error al actualizar asignaciones.");
     }
+}
+
 
     public void actualizarConductor(String codigo, String nuevoE) {
         File temporal = new File("conductoresTemp.txt");
@@ -258,5 +310,51 @@ public class ControladorAsignacion implements ActionListener {
             desasignarConductor();
         }
     }
+    public void mostrarBusAsignado(String codigoConductor) {
+    String placaBus = "Sin asignación";
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 3 && datos[0].trim().equals(codigoConductor)) {
+                placaBus = datos[2].trim(); // La placa del bus asignado
+                break;
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al buscar asignación del conductor.");
+    }
+
+  
+}
+    public void limpiar() {
+    // Limpiar campo de código
+    modelo.getVista().txtCodigo.setText("");
+
+    // Limpiar campo de autobús asignado (JTextField)
+    modelo.getVista().txtPlacaA.setText("");
+
+    // Deseleccionar item en el combo de buses disponibles, sin agregar espacios en blanco
+    if (modelo.getVista().cmbBusesA.getItemCount() > 0) {
+        modelo.getVista().cmbBusesA.setSelectedIndex(-1);
+    }
+}
+public String obtenerBusAsignado(String codigo) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 3 && datos[0].trim().equals(codigo)) {
+                return datos[2].trim(); // Placa del bus asignado
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al buscar bus asignado.");
+    }
+    return null; // No tiene asignación
+}
+
+
 }
 

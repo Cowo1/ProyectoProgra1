@@ -50,111 +50,126 @@ public class ControladorReportes implements ActionListener {
 
 
     public void cargarTabla() {
-        DefaultTableModel model = new DefaultTableModel();
-String[] columnas = {
-    "Código", "Nombre", "DPI", "Teléfono", "Licencia", "Dirección", 
-    "Tipo Licencia", "Estado", "Fecha Ingreso", "Fecha Vencimiento"
-};
-model.setColumnIdentifiers(columnas);
+    DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConductoresR.getModel();
+    model.setRowCount(0);
 
-        modelo.getVista().tblConductoresR.setModel(model);
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivoConductores))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                String[] datos = linea.split("\\|");
-                if (datos.length >= 9) {
-                    for (int i = 0; i < datos.length; i++) {
-                        datos[i] = datos[i].trim();
+    try (BufferedReader reader = new BufferedReader(new FileReader("conductores.txt"))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 10) {
+                String codigo = datos[0].trim();
+                String nombre = datos[1].trim();
+                String telefono = datos[3].trim();
+                String licencia = datos[5].trim();
+                String tipo = datos[6].trim();
+                String vencimiento = datos[8].trim();
+                String estado = datos[7].trim();
+                String fechaIngreso = datos[9].trim();
 
-                    }
-                   model.addRow(new Object[]{
-                datos[0], datos[1], datos[2], datos[3], datos[4],
-                datos[5], datos[6], datos[7], datos[8], datos[9]
-            });
-                }
+                String placaBus = obtenerPlacaBusAsignado(codigo);
 
+                model.addRow(new Object[]{
+                    codigo, nombre, telefono, licencia, tipo, vencimiento, estado, fechaIngreso, placaBus
+                });
             }
+        }
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(null, "Error al cargar los datos de los conductores.");
+    }
+}
 
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar la tabla: "+e.getMessage());
-        }
-        }
   public void exportarExcel() {
-    String[] columnas = {
-        "Código", "Nombre", "DPI", "Teléfono", "Dirección", 
-        "Licencia", "Tipo Licencia", "Estado", "Fecha Ingreso", "Fecha Vencimiento"
-    };
-    logger.info("Iniciando exportación a excel");
-    
-  
+    String[] columnas = { "Código", "Nombre", "Teléfono", "Licencia", "Tipo", "Fecha Ingreso", "Estado", "Vencimiento", "Placa Bus" };
+
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String rutaBase = "C:\\Users\\diego\\OneDrive\\Escritorio\\Reportes Transportes\\Reportes Conductores\\";
     String nombreArchivo = "Reporte Conductores (" + sdf.format(new Date()) + ").xlsx";
+
     
-    try (BufferedReader reader = new BufferedReader(new FileReader(archivoConductores));
+    try (BufferedReader reader = new BufferedReader(new FileReader("conductores.txt"));
          XSSFWorkbook workbook = new XSSFWorkbook()) {
-        
-      
+
         File directorio = new File(rutaBase);
         if (!directorio.exists()) {
             directorio.mkdirs();
         }
-        
+
         XSSFSheet sheet = workbook.createSheet("Conductores");
-        
-       
         Row header = sheet.createRow(0);
         for (int i = 0; i < columnas.length; i++) {
             header.createCell(i).setCellValue(columnas[i]);
         }
-        
-       
+
         String linea;
         int rowI = 1;
         int cuentaLinea = 0;
-        
+
         while ((linea = reader.readLine()) != null) {
             cuentaLinea++;
-            
             if (linea.trim().isEmpty()) continue;
-            
-            
-            String[] datos = linea.split("\\s*\\|\\s*", -1); 
-            
-      
-            if (datos.length >= columnas.length) {
+
+            String[] datos = linea.split("\\s*\\|\\s*", -1);
+
+            if (datos.length >= 10) {
+                String codigo = datos[0].trim();
+                String nombre = datos[1].trim();
+                String telefono = datos[3].trim();
+                String licencia = datos[5].trim();
+                String tipo = datos[6].trim();
+                String vencimiento = datos[8].trim();
+                String estado = datos[7].trim();
+                String fechaIngreso = datos[9].trim();
+
+                // Buscar la placa del bus asignado
+                String placaBus = obtenerPlacaBusAsignado(codigo);
+
                 Row row = sheet.createRow(rowI++);
-                for (int i = 0; i < columnas.length; i++) {
-                    String valor = (i < datos.length) ? datos[i].trim() : "";
-                    row.createCell(i).setCellValue(valor);
-                }
+                row.createCell(0).setCellValue(codigo);
+                row.createCell(1).setCellValue(nombre);
+                row.createCell(2).setCellValue(telefono);
+                row.createCell(3).setCellValue(licencia);
+                row.createCell(4).setCellValue(tipo);
+                row.createCell(5).setCellValue(vencimiento);
+                row.createCell(6).setCellValue(estado);
+                row.createCell(7).setCellValue(fechaIngreso);
+                row.createCell(8).setCellValue(placaBus);
             } else {
-                logger.warn("Línea " + cuentaLinea + " ignorada - Campos insuficientes: " + linea);
+                System.out.println("Línea ignorada: " + linea);
             }
         }
-        
-       
+
         for (int i = 0; i < columnas.length; i++) {
             sheet.autoSizeColumn(i);
         }
-        
-        
+
         File archivo = new File(directorio, nombreArchivo);
         try (FileOutputStream out = new FileOutputStream(archivo)) {
             workbook.write(out);
-            String mensaje = "Reporte generado con " + (rowI-1) + " registros";
+            String mensaje = "Reporte generado con " + (rowI - 1) + " registros";
             modelo.getVista().lblRutaArchivo.setText(mensaje + " en: " + archivo.getAbsolutePath());
             JOptionPane.showMessageDialog(null, mensaje);
-            logger.info(mensaje);
         }
-        
+
     } catch (IOException e) {
-        logger.error("Error al exportar excel", e);
-        JOptionPane.showMessageDialog(null, "Error al exportar a Excel: " + e.getMessage(), 
-        "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error al exportar a Excel: " + e.getMessage());
     }
 }
-        
-        
+
+        public String obtenerPlacaBusAsignado(String codigoConductor) {
+    try (BufferedReader reader = new BufferedReader(new FileReader("asignaciones.txt"))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 3 && datos[0].trim().equals(codigoConductor)) {
+                return datos[2].trim(); // Placa del bus
+            }
+        }
+    } catch (IOException e) {
+        // puedes mostrar un mensaje o manejar el error
+    }
+    return "-----";
+        }
         
     }

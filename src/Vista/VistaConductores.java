@@ -74,7 +74,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
 
         btnSalir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnSalir.setText("Salir");
@@ -455,8 +455,8 @@ VistaAsignarConductor va = new VistaAsignarConductor();
     // End of variables declaration//GEN-END:variables
 
 public void setControlador(ControladorConductores controlador){
-        btnGuardar.addActionListener(controlador);
-         btnLimpiar.addActionListener(controlador);
+      btnGuardar.addActionListener(controlador);
+        btnLimpiar.addActionListener(controlador);
           btnBuscar.addActionListener(controlador);
            btnEliminar.addActionListener(controlador);
            btnEliminarF.addActionListener(controlador);

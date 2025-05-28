@@ -4,6 +4,9 @@
  */
 package Vista;
 
+import Controlador.ControladorAsignarBus;
+import Modelo.ModeloAsignarBus;
+
 /**
  *
  * @author diego
@@ -15,6 +18,9 @@ VistaPrincipal vp = new VistaPrincipal();
      */
     public VistaAsignarBus() {
         initComponents();
+           ModeloAsignarBus modelo = new ModeloAsignarBus(this);
+        ControladorAsignarBus controlador = new ControladorAsignarBus(modelo);
+        setControlador(controlador);
          setLocationRelativeTo(null);
     }
 
@@ -52,6 +58,8 @@ VistaPrincipal vp = new VistaPrincipal();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txtOrigenR = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtPrecioR = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,13 +72,13 @@ VistaPrincipal vp = new VistaPrincipal();
 
         tblRutasA.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID Ruta", "Origen", "Destino", "Horario", "Precio"
+                "ID Ruta", "Origen", "Destino", "Horario", "Precio", "Estado"
             }
         ));
         jScrollPane1.setViewportView(tblRutasA);
@@ -146,6 +154,14 @@ VistaPrincipal vp = new VistaPrincipal();
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel10.setText("Origen:");
 
+        jLabel1.setText("Precio");
+
+        txtPrecioR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPrecioRActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -153,39 +169,43 @@ VistaPrincipal vp = new VistaPrincipal();
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel9))
-                        .addGap(27, 27, 27)
+                            .addComponent(jLabel2)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel9))
+                                .addGap(27, 27, 27)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtHorarioR, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                                    .addComponent(txtDestinoR)
+                                    .addComponent(txtPrecioR, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)))
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                    .addComponent(jLabel3)
+                                    .addGap(33, 33, 33)
+                                    .addComponent(txtCodigoR))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                                    .addComponent(jLabel10)
+                                    .addGap(33, 33, 33)
+                                    .addComponent(txtOrigenR, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(30, 30, 30)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtHorarioR, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-                            .addComponent(txtDestinoR)))
-                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                            .addComponent(jLabel3)
-                            .addGap(33, 33, 33)
-                            .addComponent(txtCodigoR))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
-                            .addComponent(jLabel10)
-                            .addGap(33, 33, 33)
-                            .addComponent(txtOrigenR, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(30, 30, 30)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cmbBusesA, 0, 167, Short.MAX_VALUE)
-                    .addComponent(txtModeloA)
-                    .addComponent(txtCapacidadA))
-                .addGap(28, 28, 28)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnAsignar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDesasignar, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
-                .addContainerGap(28, Short.MAX_VALUE))
+                            .addComponent(cmbBusesA, 0, 167, Short.MAX_VALUE)
+                            .addComponent(txtModeloA)
+                            .addComponent(txtCapacidadA))
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnAsignar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnDesasignar, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -223,7 +243,11 @@ VistaPrincipal vp = new VistaPrincipal();
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtHorarioR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8))))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(txtPrecioR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -289,6 +313,10 @@ VistaPrincipal vp = new VistaPrincipal();
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDestinoRActionPerformed
 
+    private void txtPrecioRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioRActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPrecioRActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -329,6 +357,7 @@ VistaPrincipal vp = new VistaPrincipal();
     public javax.swing.JButton btnDesasignar;
     public javax.swing.JButton btnSalir;
     public javax.swing.JComboBox<String> cmbBusesA;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -343,12 +372,18 @@ VistaPrincipal vp = new VistaPrincipal();
     private javax.swing.JPanel jPanel5;
     public javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable tblRutasA;
+    public javax.swing.JTable tblRutasA;
     public javax.swing.JTextField txtCapacidadA;
     public javax.swing.JTextField txtCodigoR;
     public javax.swing.JTextField txtDestinoR;
     public javax.swing.JTextField txtHorarioR;
     public javax.swing.JTextField txtModeloA;
     public javax.swing.JTextField txtOrigenR;
+    public javax.swing.JTextField txtPrecioR;
     // End of variables declaration//GEN-END:variables
+
+    private void setControlador(ControladorAsignarBus controlador) {
+        btnAsignar.addActionListener(controlador);
+         btnDesasignar.addActionListener(controlador);
+    }
 }

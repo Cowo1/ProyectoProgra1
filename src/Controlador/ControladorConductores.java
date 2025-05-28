@@ -141,50 +141,79 @@ public class ControladorConductores implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al buscar el conductor.");
         }
     }
-    public void eliminar(){
-        String codigo = modelo.getVista().txtCodigo.getText().trim();
-        if (codigo.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Ingrese el código del conductor a eliminar.");
-            return;
-        }
+  public void eliminar() {
+    String codigo = modelo.getVista().txtCodigo.getText().trim();
 
-        File temporal = new File("conductores_temp.txt");
-        boolean encontrado = false;
-
-        try (
-            BufferedReader reader = new BufferedReader(new FileReader(archivo));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))
-        ) {
-            String linea;
-
-            while ((linea = reader.readLine()) != null) {
-                String[] datos = linea.split("\\|");
-                if (datos.length >= 1 && datos[0].trim().equals(codigo)) {
-                    encontrado = true;
-                    continue;
-                }
-                writer.write(linea);
-                writer.newLine();
-            }
-
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar el conductor.");
-            return;
-        }
-
-        if (archivo.delete() && temporal.renameTo(archivo)) {
-            if (encontrado) {
-                JOptionPane.showMessageDialog(null, "Conductor eliminado correctamente.");
-                limpiar();
-                cargarTabla();
-                return;
-            } else {
-                JOptionPane.showMessageDialog(null, "No se encontró un conductor con ese código.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Error al reemplazar el archivo.");
-        }
+    if (codigo.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Ingrese el código del conductor a eliminar.");
+        return;
     }
+
+    boolean encontrado = false;
+    String estadoConductor = "";
+
+    // Verificar estado del conductor
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+
+            if (datos.length >= 8 && datos[0].trim().equals(codigo)) {
+                estadoConductor = datos[7].trim();
+                encontrado = true;
+                break;
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al verificar el estado del conductor.");
+        return;
+    }
+
+    if (!encontrado) {
+        JOptionPane.showMessageDialog(null, "No se encontró un conductor con ese código.");
+        return;
+    }
+
+    if (estadoConductor.equalsIgnoreCase("Asignado")) {
+        JOptionPane.showMessageDialog(null, "Este conductor tiene un bus asignado. Debe desasignarlo antes de poder eliminarlo.");
+        return;
+    }
+
+    // Eliminar conductor si NO está asignado
+    File temporal = new File("conductores_temp.txt");
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivo));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))
+    ) {
+        String linea;
+
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+
+            if (datos.length >= 1 && datos[0].trim().equals(codigo)) {
+                continue; // No se escribe esta línea
+            }
+
+            writer.write(linea);
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar el conductor.");
+        return;
+    }
+
+    if (archivo.delete() && temporal.renameTo(archivo)) {
+        JOptionPane.showMessageDialog(null, "Conductor eliminado correctamente.");
+        limpiar();
+        cargarTabla();
+    } else {
+        JOptionPane.showMessageDialog(null, "Error al reemplazar el archivo.");
+    }
+}
+
+    
 
     public void limpiar() {
         modelo.getVista().txtCodigo.setText("");
@@ -223,7 +252,7 @@ public class ControladorConductores implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al cargar la tabla de conductores.");
         }
     }
-    public void eliminarFila() {
+  public void eliminarFila() {
     int filaS = modelo.getVista().tblConductores.getSelectedRow();
 
     if (filaS == -1) {
@@ -232,13 +261,42 @@ public class ControladorConductores implements ActionListener {
     }
 
     String codigoEliminar = modelo.getVista().tblConductores.getValueAt(filaS, 0).toString();
+    String estado = "";
 
+    // Verificar el estado del conductor
+    boolean encontrado = false;
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 8 && datos[0].trim().equals(codigoEliminar)) {
+                estado = datos[7].trim();
+                encontrado = true;
+                break;
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al verificar el estado del conductor.");
+        return;
+    }
+
+    if (!encontrado) {
+        JOptionPane.showMessageDialog(null, "No se encontró el conductor en el archivo.");
+        return;
+    }
+
+    if (estado.equalsIgnoreCase("Asignado")) {
+        JOptionPane.showMessageDialog(null, "Este conductor tiene un bus asignado. Debe desasignarlo antes de poder eliminarlo.");
+        return;
+    }
+
+    // Proceder con la eliminación si no está asignado
     File archivoTemporal = new File("conductores_temp.txt");
     boolean eliminado = false;
 
     try (
         BufferedReader reader = new BufferedReader(new FileReader(archivo));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemporal));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemporal))
     ) {
         String linea;
 
@@ -270,6 +328,7 @@ public class ControladorConductores implements ActionListener {
         JOptionPane.showMessageDialog(null, "Error al reemplazar el archivo.");
     }
 }
+
     public void verificarLicenciaV() {
     File temporal = new File("conductores_temp.txt");
     Date hoy = new Date();

@@ -79,13 +79,13 @@ VistaPrincipal vp = new VistaPrincipal();
 
         tblConductoresR.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Codigo", "Nombre", "Telefono", "Licencia", "Tipo", "Vencimiento", "Estado", "Fecha Ingreso"
+                "Codigo", "Nombre", "Telefono", "Licencia", "Tipo", "Fecha ingreso", "Estado", "Vencimiento", "Placa Bus"
             }
         ));
         jScrollPane2.setViewportView(tblConductoresR);

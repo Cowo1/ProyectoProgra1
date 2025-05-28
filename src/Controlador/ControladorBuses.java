@@ -129,37 +129,62 @@ public class ControladorBuses implements ActionListener {
     
     
    public void eliminar() {
-        String placaB = modelo.getVista().txtPlacaB.getText().trim();
-        if (placaB.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Ingrese una placa para eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    String placaB = modelo.getVista().txtPlacaB.getText().trim();
+    
+    if (placaB.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Ingrese una placa para eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-        File temporal = new File("temp_autobuses.txt");
-
-        try (
-            BufferedReader reader = new BufferedReader(new FileReader(archivo));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(temporal));
-        ) {
-            String linea;
-            boolean encontrado = false;
-            while ((linea = reader.readLine()) != null) {
-                String[] datos = linea.split(" \\| ");
-                if (datos.length > 0 && datos[0].equalsIgnoreCase(placaB)) {
-                    encontrado = true;
-                    continue;
+    // Verificar si el bus está asignado antes de eliminar
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(" \\| ");
+            if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placaB)) {
+                String estado = datos[3].trim();
+                if (estado.equalsIgnoreCase("Asignado") || estado.equalsIgnoreCase("Ruta Asignada")) {
+                    JOptionPane.showMessageDialog(null, "Este autobús está asignado. Primero desasigne antes de eliminarlo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
-                writer.write(linea);
-                writer.newLine();
+                break;
             }
-            } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar el autobus: " + e.getMessage());
-            return;
-            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al verificar el estado del autobús: " + e.getMessage());
+        return;
+    }
 
-           if (archivo.delete()) {
+    File temporal = new File("temp_autobuses.txt");
+    boolean encontrado = false;
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivo));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(temporal));
+    ) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(" \\| ");
+            if (datos.length > 0 && datos[0].equalsIgnoreCase(placaB)) {
+                encontrado = true;
+                continue; // No escribir la línea a eliminar
+            }
+            writer.write(linea);
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar el autobús: " + e.getMessage());
+        return;
+    }
+
+    if (!encontrado) {
+        JOptionPane.showMessageDialog(null, "No se encontró el autobús con esa placa.");
+        return;
+    }
+
+    if (archivo.delete()) {
         if (temporal.renameTo(archivo)) {
-            JOptionPane.showMessageDialog(null, "Autobus eliminado con exito.");
+            JOptionPane.showMessageDialog(null, "Autobús eliminado con éxito.");
             limpiar();
             cargarTabla();
         } else {
@@ -168,9 +193,8 @@ public class ControladorBuses implements ActionListener {
     } else {
         JOptionPane.showMessageDialog(null, "Error al eliminar el archivo original.");
     }
+}
 
-        
-    }
    public void eliminarFila() {
     int filaS = modelo.getVista().tblBuses.getSelectedRow();
 
@@ -181,6 +205,25 @@ public class ControladorBuses implements ActionListener {
 
     String placaEliminar = modelo.getVista().tblBuses.getValueAt(filaS, 0).toString();
 
+    // Verificar si el autobús está asignado
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(" \\| ");
+            if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placaEliminar)) {
+                String estado = datos[3].trim();
+                if (estado.equalsIgnoreCase("Asignado") || estado.equalsIgnoreCase("Ruta Asignada")) {
+                    JOptionPane.showMessageDialog(null, "Este autobús está asignado. Primero desasígnelo antes de eliminarlo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                break;
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al verificar el estado del autobús.");
+        return;
+    }
+
     File archivoTemporal = new File("buses_temp.txt");
     boolean eliminado = false;
 
@@ -189,36 +232,35 @@ public class ControladorBuses implements ActionListener {
         BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemporal));
     ) {
         String linea;
-
         while ((linea = reader.readLine()) != null) {
             String[] datos = linea.split("\\|");
 
-            if (datos.length > 0 && datos[0].trim().equals(placaEliminar)) {
+            if (datos.length > 0 && datos[0].trim().equalsIgnoreCase(placaEliminar)) {
                 eliminado = true;
-                continue; 
+                continue; // No escribir la línea a eliminar
             }
 
             writer.write(linea);
             writer.newLine();
         }
-        
 
     } catch (IOException e) {
-        JOptionPane.showMessageDialog(null, "Error al eliminar el autobus.");
+        JOptionPane.showMessageDialog(null, "Error al eliminar el autobús.");
         return;
     }
 
     if (archivo.delete() && archivoTemporal.renameTo(archivo)) {
         if (eliminado) {
-            JOptionPane.showMessageDialog(null, "Autobus eliminado correctamente.");
+            JOptionPane.showMessageDialog(null, "Autobús eliminado correctamente.");
             cargarTabla(); 
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontró el bus.");
+            JOptionPane.showMessageDialog(null, "No se encontró el autobús.");
         }
     } else {
         JOptionPane.showMessageDialog(null, "Error al reemplazar el archivo.");
     }
 }
+
     
    
 }
