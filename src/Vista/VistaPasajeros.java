@@ -90,8 +90,6 @@ VistaPrincipal vp = new VistaPrincipal();
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("DPI");
 
-        txtDpi.setEditable(false);
-
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Teléfono");
 

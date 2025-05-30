@@ -2,3 +2,4 @@
 
 02 | Guastatoya | Guatemala | 23:52 | Q.50.00 | 445FDA | 2013 Hyundai | 18 | 2025-05-28
 01 | gautemala | Antigua | 18:46 | Q.50.00 | 356SDF | 2000 Coaster | 25 | 2025-05-29
+02 | Guastatoya | Guatemala | 23:52 | Q.50.00 | 365MNV | 2005 Hyundai | 40 | 2025-05-29

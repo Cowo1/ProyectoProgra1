@@ -26,7 +26,6 @@ public class ControladorPasajeros implements ActionListener {
     public ControladorPasajeros(ModeloPasajeros modelo) {
         this.modelo = modelo;
 
-        // Eventos
         
 
         // Selección en la tabla
@@ -46,6 +45,7 @@ public class ControladorPasajeros implements ActionListener {
             buscarPasajero();
         } else if (e.getSource() == modelo.getVista().btnEliminar) {
             eliminarPasajero();
+            cargarTabla();
         } else if (e.getSource() == modelo.getVista().btnLimpiar) {
             limpiarCampos();
         }if (e.getSource() == modelo.getVista().btnEliminarF) {
@@ -99,10 +99,10 @@ public class ControladorPasajeros implements ActionListener {
 
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split("\\|");
-                if (datos.length == 4 && datos[0].trim().equals(dpi)) {
-                    modelo.getVista().txtTelefono.setText(datos[1].trim());
-                    modelo.getVista().txtNombre.setText(datos[2].trim());
-                    
+                if (datos.length == 4 && datos[1].trim().equals(dpi)) {
+                     modelo.getVista().txtNombre.setText(datos[0].trim());
+                    modelo.getVista().txtTelefono.setText(datos[2].trim());
+                   
                     modelo.getVista().txtFechaDeViaje.setText(datos[3].trim());
                     encontrado = true;
                     break;
@@ -119,45 +119,66 @@ public class ControladorPasajeros implements ActionListener {
     }
 
     private void eliminarPasajero() {
-        String dpi = modelo.getVista().txtDpi.getText().trim();
-        if (dpi.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Ingrese un DPI para eliminar.");
-            return;
-        }
+    String dpi = modelo.getVista().txtDpi.getText().trim();
 
-        File temp = new File("temporal.txt");
+    if (dpi.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Ingrese el DPI del pasajero que desea eliminar.");
+        return;
+    }
 
-        try (
-            BufferedReader br = new BufferedReader(new FileReader(archivoPasajeros));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(temp))
-        ) {
-            String linea;
-            boolean eliminado = false;
+    File archivoOriginal = new File("pasajeros.txt").getAbsoluteFile();
+    File archivoTemporal = new File("pasajeros_temp.txt").getAbsoluteFile();
 
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split("\\|");
-                if (!datos[0].trim().equals(dpi)) {
+    boolean eliminado = false;
+
+    try (
+        BufferedReader br = new BufferedReader(new FileReader(archivoOriginal));
+        BufferedWriter bw = new BufferedWriter(new FileWriter(archivoTemporal))
+    ) {
+        String linea;
+
+        while ((linea = br.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+
+            if (datos.length > 1) {
+                String dpiArchivo = datos[1].trim(); 
+                if (!dpiArchivo.equals(dpi)) {
                     bw.write(linea);
                     bw.newLine();
                 } else {
                     eliminado = true;
                 }
+            } else {
+               
+                bw.write(linea);
+                bw.newLine();
             }
+        }
 
-            if (eliminado) {
-                archivoPasajeros.delete();
-                temp.renameTo(archivoPasajeros);
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error al procesar el archivo: " + ex.getMessage());
+        return;
+    }
+
+    if (eliminado) {
+        if (archivoOriginal.delete()) {
+            if (archivoTemporal.renameTo(archivoOriginal)) {
                 JOptionPane.showMessageDialog(null, "Pasajero eliminado correctamente.");
                 cargarTabla();
                 limpiarCampos();
             } else {
-                JOptionPane.showMessageDialog(null, "No se encontró el pasajero para eliminar.");
+                JOptionPane.showMessageDialog(null, "Error: No se pudo renombrar el archivo temporal.");
             }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } else {
+            JOptionPane.showMessageDialog(null, "Error: No se pudo eliminar el archivo original.");
         }
+    } else {
+        archivoTemporal.delete();
+        JOptionPane.showMessageDialog(null, "No se encontró un pasajero con ese DPI.");
     }
+}
+
 
     private void limpiarCampos() {
         modelo.getVista().txtDpi.setText("");
