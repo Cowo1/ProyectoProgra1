@@ -14,6 +14,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -28,6 +33,7 @@ public class ControladorBuses implements ActionListener {
 
     public ControladorBuses(ModeloBuses modelo) {
         this.modelo = modelo;
+       verificarRutasOcupadasYActualizarBuses();
         cargarTabla();
     }
     
@@ -39,6 +45,7 @@ public class ControladorBuses implements ActionListener {
     public void actionPerformed(ActionEvent e) {
    if (e.getSource() == modelo.getVista().btnGuardar) {
             guardarAutobus();
+            cargarTabla();
         } else if (e.getSource() == modelo.getVista().btnBuscar) {
             buscarAutobus();
         } else if (e.getSource() == modelo.getVista().btnEliminar) {
@@ -143,7 +150,7 @@ public class ControladorBuses implements ActionListener {
             String[] datos = linea.split(" \\| ");
             if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placaB)) {
                 String estado = datos[3].trim();
-                if (estado.equalsIgnoreCase("Asignado") || estado.equalsIgnoreCase("Ruta Asignada")) {
+                if (estado.equalsIgnoreCase(" Conductor Asignado") || estado.equalsIgnoreCase("Ruta Asignada")) {
                     JOptionPane.showMessageDialog(null, "Este autobús está asignado. Primero desasigne antes de eliminarlo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -212,7 +219,7 @@ public class ControladorBuses implements ActionListener {
             String[] datos = linea.split(" \\| ");
             if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placaEliminar)) {
                 String estado = datos[3].trim();
-                if (estado.equalsIgnoreCase("Asignado") || estado.equalsIgnoreCase("Ruta Asignada")) {
+                if (estado.equalsIgnoreCase("Conductor Asignado") || estado.equalsIgnoreCase("Ruta Asignada")) {
                     JOptionPane.showMessageDialog(null, "Este autobús está asignado. Primero desasígnelo antes de eliminarlo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -259,6 +266,122 @@ public class ControladorBuses implements ActionListener {
     } else {
         JOptionPane.showMessageDialog(null, "Error al reemplazar el archivo.");
     }
+}
+private void actualizarEstadoBus(String placaBus, String nuevoEstado) {
+    File archivo = new File("buses.txt");
+    File temporal = new File("temp_buses.txt");
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivo));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(temporal))
+    ) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 4) {
+                String placa = datos[0].trim();
+                if (placa.equalsIgnoreCase(placaBus)) {
+                    datos[3] = nuevoEstado; // Cambiar estado
+                }
+
+                for (int i = 0; i < datos.length; i++) {
+                    datos[i] = datos[i].trim();
+                }
+
+                writer.write(String.join(" | ", datos));
+                writer.newLine();
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al actualizar estado del bus");
+    }
+
+    archivo.delete();
+    temporal.renameTo(archivo);
+}
+
+public void verificarRutasOcupadasYActualizarBuses() {
+    File archivoRutas = new File("rutas.txt");
+    File archivoAsignaciones = new File("asignacion_ruta.txt");
+
+    List<String> rutasOcupadas = new ArrayList<>();
+    Map<String, String> mapaRutaPlaca = new HashMap<>();
+
+    // Paso 1: Obtener códigos de rutas que están ocupadas
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 6) {
+                String codigoRuta = datos[0].trim();
+                String estado = datos[5].trim();
+                if (estado.equalsIgnoreCase("Ocupada")) {
+                    rutasOcupadas.add(codigoRuta);
+                }
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error leyendo rutas.txt");
+        return;
+    }
+
+    // Paso 2: Asociar rutas ocupadas con placas de buses
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 6) {
+                String codigoRuta = datos[0].trim();
+                String placa = datos[5].trim();
+                if (rutasOcupadas.contains(codigoRuta)) {
+                    mapaRutaPlaca.put(codigoRuta, placa);
+                }
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error leyendo asignacion_ruta.txt");
+        return;
+    }
+
+    // Paso 3: Actualizar estado del bus a "En ruta" si está en "Ruta Asignada"
+    File archivoOriginal = new File("buses.txt");
+    File archivoTemporal = new File("temp_buses.txt");
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(archivoOriginal));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(archivoTemporal))
+    ) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 4) {
+                String placa = datos[0].trim();
+                String estado = datos[3].trim();
+
+                // Verifica si esta placa está asociada a una ruta ocupada
+                if (mapaRutaPlaca.containsValue(placa) && estado.equalsIgnoreCase("Ruta Asignada")) {
+                    datos[3] = "En ruta";
+                }
+
+                for (int i = 0; i < datos.length; i++) {
+                    datos[i] = datos[i].trim();
+                }
+
+                writer.write(String.join(" | ", datos));
+                writer.newLine();
+            }
+        }
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error actualizando buses.txt");
+        return;
+    }
+
+    archivoOriginal.delete();
+    archivoTemporal.renameTo(archivoOriginal);
+
+    // Actualizar la tabla visual
+    cargarTabla();
 }
 
     

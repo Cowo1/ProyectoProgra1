@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.System.Logger;
 import java.text.SimpleDateFormat;
 import java.util.Date; 
+import javax.swing.JFileChooser;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -81,19 +82,22 @@ public class ControladorReportes implements ActionListener {
 
   public void exportarExcel() {
     String[] columnas = { "Código", "Nombre", "Teléfono", "Licencia", "Tipo", "Fecha Ingreso", "Estado", "Vencimiento", "Placa Bus" };
-
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    String rutaBase = "C:\\Users\\diego\\OneDrive\\Escritorio\\Reportes Transportes\\Reportes Conductores\\";
-    String nombreArchivo = "Reporte Conductores (" + sdf.format(new Date()) + ").xlsx";
 
-    
+    // Selector de archivo
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Guardar Reporte de Conductores");
+    fileChooser.setSelectedFile(new File("Reporte Conductores (" + sdf.format(new Date()) + ").xlsx"));
+    int seleccion = fileChooser.showSaveDialog(null);
+
+    if (seleccion != JFileChooser.APPROVE_OPTION) {
+        return; // el usuario canceló
+    }
+
+    File archivo = fileChooser.getSelectedFile();
+
     try (BufferedReader reader = new BufferedReader(new FileReader("conductores.txt"));
          XSSFWorkbook workbook = new XSSFWorkbook()) {
-
-        File directorio = new File(rutaBase);
-        if (!directorio.exists()) {
-            directorio.mkdirs();
-        }
 
         XSSFSheet sheet = workbook.createSheet("Conductores");
         Row header = sheet.createRow(0);
@@ -103,10 +107,8 @@ public class ControladorReportes implements ActionListener {
 
         String linea;
         int rowI = 1;
-        int cuentaLinea = 0;
 
         while ((linea = reader.readLine()) != null) {
-            cuentaLinea++;
             if (linea.trim().isEmpty()) continue;
 
             String[] datos = linea.split("\\s*\\|\\s*", -1);
@@ -120,8 +122,6 @@ public class ControladorReportes implements ActionListener {
                 String vencimiento = datos[8].trim();
                 String estado = datos[7].trim();
                 String fechaIngreso = datos[9].trim();
-
-                // Buscar la placa del bus asignado
                 String placaBus = obtenerPlacaBusAsignado(codigo);
 
                 Row row = sheet.createRow(rowI++);
@@ -130,12 +130,10 @@ public class ControladorReportes implements ActionListener {
                 row.createCell(2).setCellValue(telefono);
                 row.createCell(3).setCellValue(licencia);
                 row.createCell(4).setCellValue(tipo);
-                row.createCell(5).setCellValue(vencimiento);
+                row.createCell(5).setCellValue(fechaIngreso);
                 row.createCell(6).setCellValue(estado);
-                row.createCell(7).setCellValue(fechaIngreso);
+                row.createCell(7).setCellValue(vencimiento);
                 row.createCell(8).setCellValue(placaBus);
-            } else {
-                System.out.println("Línea ignorada: " + linea);
             }
         }
 
@@ -143,7 +141,6 @@ public class ControladorReportes implements ActionListener {
             sheet.autoSizeColumn(i);
         }
 
-        File archivo = new File(directorio, nombreArchivo);
         try (FileOutputStream out = new FileOutputStream(archivo)) {
             workbook.write(out);
             String mensaje = "Reporte generado con " + (rowI - 1) + " registros";
@@ -156,6 +153,7 @@ public class ControladorReportes implements ActionListener {
         JOptionPane.showMessageDialog(null, "Error al exportar a Excel: " + e.getMessage());
     }
 }
+
 
         public String obtenerPlacaBusAsignado(String codigoConductor) {
     try (BufferedReader reader = new BufferedReader(new FileReader("asignaciones.txt"))) {

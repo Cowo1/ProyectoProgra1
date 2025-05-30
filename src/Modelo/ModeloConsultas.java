@@ -4,23 +4,24 @@
  */
 package Modelo;
 
-import Vista.VistaPasajeros;
+import Vista.VistaConsultas;
 
 /**
  *
  * @author diego
  */
-public class ModeloPasajeros {
-    private VistaPasajeros vista;
-    
-    
+public class ModeloConsultas {
+     private VistaConsultas vista;
 
-    public ModeloPasajeros(VistaPasajeros vista) {
+    public ModeloConsultas(VistaConsultas vista) {
         this.vista = vista;
     }
 
-    public VistaPasajeros getVista() {
+    public VistaConsultas getVista() {
         return vista;
     }
-}
 
+    public void setVista(VistaConsultas vista) {
+        this.vista = vista;
+    }
+}

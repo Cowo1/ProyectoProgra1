@@ -73,8 +73,7 @@ public class ControladorAsignacion implements ActionListener {
         cargarBuses();
         cargarConductores();
 
-        modelo.getVista().btnAsignar.addActionListener(this);
-        modelo.getVista().btnDesasignar.addActionListener(this);
+     
     }
                 
     public void cargarConductores() {
@@ -117,7 +116,7 @@ public class ControladorAsignacion implements ActionListener {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
-                if (datos.length >= 4 && datos[3].trim().equalsIgnoreCase("Disponible") || datos[3].trim().equalsIgnoreCase("En ruta")) {
+                if (datos.length >= 4 && datos[3].trim().equalsIgnoreCase("Disponible")) {
                     modelo.getVista().cmbBusesA.addItem(datos[0].trim());
                 }
             }
@@ -148,7 +147,7 @@ public class ControladorAsignacion implements ActionListener {
         }
 
         actualizarConductor(codigo, "Asignado");
-        actualizarBus(placa, "Asignado");
+        actualizarBus(placa, "Conductor Asignado");
 
         JOptionPane.showMessageDialog(null, "Conductor asignado correctamente.");
         cargarConductores();

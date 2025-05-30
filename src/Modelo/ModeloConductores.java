@@ -17,17 +17,17 @@ public class ModeloConductores {
     
     private VistaConductores vista;
     private int codigo;
-    private int DPI;
+    private String DPI;
     private String nombre;
     private String telefono;
     private String direccion;
-    private int licencia;
+    private String licencia;
     private String tipo;
     private String vencimiento;
     private String ingreso;
     private String estado;
 
-    public ModeloConductores(VistaConductores vista, int codigo, int DPI, String nombre, String telefono, String direccion, int licencia, String tipo, String vencimiento, String ingreso, String estado) {
+    public ModeloConductores(VistaConductores vista, int codigo, String DPI, String nombre, String telefono, String direccion, String licencia, String tipo, String vencimiento, String ingreso, String estado) {
         this.vista = vista;
         this.codigo = codigo;
         this.DPI = DPI;
@@ -63,11 +63,11 @@ public class ModeloConductores {
         this.codigo = codigo;
     }
 
-    public int getDPI() {
+    public String getDPI() {
         return DPI;
     }
 
-    public void setDPI(int DPI) {
+    public void setDPI(String DPI) {
         this.DPI = DPI;
     }
 
@@ -95,11 +95,11 @@ public class ModeloConductores {
         this.direccion = direccion;
     }
 
-    public int getLicencia() {
+    public String getLicencia() {
         return licencia;
     }
 
-    public void setLicencia(int licencia) {
+    public void setLicencia(String licencia) {
         this.licencia = licencia;
     }
 

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -32,74 +33,143 @@ public class ControladorConductores implements ActionListener {
 
     public ControladorConductores(ModeloConductores modelo) {
         this.modelo = modelo;
-       
-        modelo.getVista().btnGuardar.addActionListener(this);
-        modelo.getVista().btnBuscar.addActionListener(this);
-        modelo.getVista().btnEliminar.addActionListener(this);
-        modelo.getVista().btnLimpiar.addActionListener(this);
         verificarLicenciaV();
         cargarTabla();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == modelo.getVista().btnGuardar){
+        if (e.getSource() == modelo.getVista().btnGuardar) {
             guardar();
-            verificarLicenciaV();
-            cargarTabla();
             
-        }else if(e.getSource() == modelo.getVista().btnBuscar){
-            buscar();  
-        }else if(e.getSource() == modelo.getVista().btnEliminar){
-        eliminar();
-        }else if(e.getSource() == modelo.getVista().btnLimpiar){
+        } else if (e.getSource() == modelo.getVista().btnBuscar) {
+            buscar();
+        } else if (e.getSource() == modelo.getVista().btnEliminar) {
+            eliminar();
+        } else if (e.getSource() == modelo.getVista().btnLimpiar) {
             limpiar();
-        }else if(e.getSource() == modelo.getVista().btnEliminarF){
-        eliminarFila();
+        } else if (e.getSource() == modelo.getVista().btnEliminarF) {
+            eliminarFila();
         }
     }
 
-    public void guardar() {
-   
-        String codigo = modelo.getVista().txtCodigo.getText().trim();
-       String licencia = modelo.getVista().txtLicencia.getText().trim();
-        String dpi = modelo.getVista().txtDPI.getText().trim();
-        
-         if (!entero(codigo, "Codigo") || !entero(dpi, "DPI") || !entero(licencia, "Licencia")) {
-        return; 
-    }
-          String nombre = modelo.getVista().txtNombre.getText().trim();
-        String telefono = modelo.getVista().txtTelefono.getText().trim();
-        String direccion = modelo.getVista().txtDireccion.getText().trim();
-        String tipoLicencia = modelo.getVista().cbTipo.getSelectedItem().toString();
-        String estado = modelo.getVista().cbEstado.getSelectedItem().toString();
-        
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
-        String fechaIngreso = sdf.format(modelo.getVista().dcFechaI.getDate());
-        String fechaVencimiento = sdf.format(modelo.getVista().dcVencimiento.getDate());
- if (fechaIngreso == null || fechaVencimiento == null) {
+   public void guardar() {
+    String codigo = modelo.getVista().txtCodigo.getText().trim();
+    String licencia = modelo.getVista().txtLicencia.getText().trim();
+    String dpi = modelo.getVista().txtDPI.getText().trim();
+    String nombre = modelo.getVista().txtNombre.getText().trim();
+    String telefono = modelo.getVista().txtTelefono.getText().trim();
+    String direccion = modelo.getVista().txtDireccion.getText().trim();
+    String tipoLicencia = modelo.getVista().cbTipo.getSelectedItem().toString();
+    String estado = modelo.getVista().cbEstado.getSelectedItem().toString();
+
+   Date fechaI = modelo.getVista().dcFechaI.getDate();
+Date fechaV = modelo.getVista().dcVencimiento.getDate();
+
+if (fechaI == null || fechaV == null) {
     JOptionPane.showMessageDialog(null, "Debe seleccionar ambas fechas (ingreso y vencimiento).");
     return;
 }
-         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
-       
-        String linea = String.format("%-8s | %-20s | %-12s | %-10s | %-25s | %-10s | %-15s | %-10s | %-12s | %-12s",
-            codigo, nombre, dpi, telefono, direccion, licencia, tipoLicencia, estado, fechaIngreso, fechaVencimiento);
-        
+
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+String fechaIngreso = sdf.format(fechaI);
+String fechaVencimiento = sdf.format(fechaV);
+
+
+    // Validaciones
+    if (codigo.length() != 5 || !codigo.matches("\\d+")) {
+        JOptionPane.showMessageDialog(null, "El código debe contener exactamente 5 dígitos numéricos.");
+        return;
+    }
+
+    if (dpi.length() != 13 || !dpi.matches("\\d+")) {
+        JOptionPane.showMessageDialog(null, "El DPI debe contener exactamente 13 dígitos numéricos.");
+        return;
+    }
+
+    if (licencia.length() != 13 || !licencia.matches("\\d+")) {
+        JOptionPane.showMessageDialog(null, "La licencia debe contener exactamente 13 dígitos numéricos.");
+        return;
+    }
+
+    if (existeCodigo(codigo)) {
+        JOptionPane.showMessageDialog(null, "El código ya está registrado.");
+        return;
+    }
+
+    if (existeLicencia(licencia)) {
+        JOptionPane.showMessageDialog(null, "La licencia ya está registrada.");
+        return;
+    }
+
+    if (existeDPI(dpi)) {
+        JOptionPane.showMessageDialog(null, "El DPI ya está registrado.");
+        return;
+    }
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
+        // Formato con columnas alineadas
+        String linea = String.format("%-8s | %-20s | %-12s | %-10s | %-25s | %-13s | %-15s | %-10s | %-12s | %-12s",
+                codigo, nombre, dpi, telefono, direccion, licencia, tipoLicencia, estado, fechaIngreso, fechaVencimiento);
         writer.write(linea);
         writer.newLine();
-            
-            JOptionPane.showMessageDialog(null,"Conductor guardado correctamente");
-            limpiar();
-          
-            
-        } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null,"Error al guardar el conductor");
 
-        }
+        JOptionPane.showMessageDialog(null, "Conductor guardado correctamente");
+        limpiar();
+        verificarLicenciaV();
+        cargarTabla();
+
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(null, "Error al guardar el conductor");
     }
+}
+
+
+    public boolean existeCodigo(String codigo) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length > 0 && datos[0].trim().equals(codigo)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
+    }
+
+    public boolean existeDPI(String dpi) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length > 2 && datos[2].trim().equals(dpi)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
+    }
+
+     public boolean existeLicencia(String licencia) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length > 5 && datos[5].trim().equals(licencia)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
+    }
+
     
     public void buscar(){
         String codigo = modelo.getVista().txtCodigo.getText().trim();
@@ -343,16 +413,26 @@ public class ControladorConductores implements ActionListener {
         while ((linea = reader.readLine()) != null) {
             String[] datos = linea.split("\\|");
             if (datos.length == 10) {
-                String estado = datos[7].trim();
-                Date vencimiento = sdf.parse(datos[9].trim());
+    String fechaStr = datos[9].trim();
 
-                if (vencimiento.before(hoy)) {
-                    datos[7] = "Inactivo"; 
-                }
+    if (!fechaStr.isEmpty()) {
+        try {
+            Date vencimiento = sdf.parse(fechaStr);
+            String estado = datos[7].trim();
 
-                writer.write(String.join(" | ", datos));
-                writer.newLine();
+            if (vencimiento.before(hoy)) {
+                datos[7] = "Inactivo";
             }
+        } catch (ParseException ex) {
+            // Ignorar o loguear la línea con fecha inválida
+            continue;
+        }
+    }
+
+    writer.write(String.join(" | ", datos));
+    writer.newLine();
+}
+
         }
 
         reader.close();

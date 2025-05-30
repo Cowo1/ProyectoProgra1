@@ -24,8 +24,7 @@ public class ControladorAsignarBus implements ActionListener {
     public ControladorAsignarBus(ModeloAsignarBus modelo) {
         this.modelo = modelo;
 
-        cargarRutas();
-        cargarBuses();
+        
 
         modelo.getVista().tblRutasA.getSelectionModel().addListSelectionListener(e -> {
             int fila = modelo.getVista().tblRutasA.getSelectedRow();
@@ -36,16 +35,39 @@ public class ControladorAsignarBus implements ActionListener {
             }
         });
 
-        modelo.getVista().cmbBusesA.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                mostrarDatosBus(e.getItem().toString());
+        modelo.getVista().cmbBusesA.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String placaS = e.getItem().toString();
+                    mostrarDatosB(placaS);
+                }
             }
         });
         modelo.getVista().btnDesasignar.addActionListener(e -> desasignarBusDeRuta());
 
-        modelo.getVista().btnAsignar.addActionListener(this);
+      
     }
+public void mostrarDatosB(String placa) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length >= 4 && datos[0].trim().equalsIgnoreCase(placa)) {
 
+                    modelo.getVista().txtModeloA.setText(datos[1].trim());
+                    modelo.getVista().txtCapacidadA.setText(datos[2].trim());
+                    return;
+                }
+            }
+
+            modelo.getVista().txtModeloA.setText("");
+            modelo.getVista().txtCapacidadA.setText("");
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al buscar los datos del autobús.");
+        }
+    }
     public void cargarRutas() {
         DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblRutasA.getModel();
         model.setRowCount(0);
@@ -68,21 +90,29 @@ public class ControladorAsignarBus implements ActionListener {
         }
     }
 
-    public void cargarBuses() {
-        modelo.getVista().cmbBusesA.removeAllItems();
+  public void cargarBuses() {
+    modelo.getVista().cmbBusesA.removeAllItems();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(archivoBuses))) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                String[] datos = linea.split("\\|");
-                if (datos.length >= 4 && datos[3].trim().equalsIgnoreCase("Asignado")) {
-                    modelo.getVista().cmbBusesA.addItem(datos[0].trim());
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivoBuses))) {
+        String linea;
+        boolean primero = true;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length >= 4 && datos[3].trim().equalsIgnoreCase("Conductor Asignado")) {
+                modelo.getVista().cmbBusesA.addItem(datos[0].trim());
+                if (primero) {
+                    primero = false;
+                    // Selecciona el primero automáticamente y muestra sus datos
+                    modelo.getVista().cmbBusesA.setSelectedItem(datos[0].trim());
+                    mostrarDatosB(datos[0].trim());
                 }
             }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar buses disponibles");
         }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error al cargar buses disponibles");
     }
+}
+
 
     public void mostrarDatosRuta(String codigo) {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas))) {
@@ -103,6 +133,7 @@ public class ControladorAsignarBus implements ActionListener {
     }
 
     public void mostrarDatosBus(String placa) {
+          
         try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
@@ -130,35 +161,40 @@ public class ControladorAsignarBus implements ActionListener {
         }
     }
 
-    public void asignarBusARuta() {
-        String idRuta = modelo.getVista().txtCodigoR.getText().trim();
-        String placa = (String) modelo.getVista().cmbBusesA.getSelectedItem();
+   public void asignarBusARuta() {
+    String idRuta = modelo.getVista().txtCodigoR.getText().trim();
+    String origen = modelo.getVista().txtOrigenR.getText().trim();
+    String destino = modelo.getVista().txtDestinoR.getText().trim();
+    String horario = modelo.getVista().txtHorarioR.getText().trim();
+    String precio = modelo.getVista().txtPrecioR.getText().trim();
+    String placa = (String) modelo.getVista().cmbBusesA.getSelectedItem();
+    String modeloBus = modelo.getVista().txtModeloA.getText().trim();
+    String capacidad = modelo.getVista().txtCapacidadA.getText().trim();
+    String fechaAsignacion = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-        if (idRuta.isEmpty() || placa == null) {
-            JOptionPane.showMessageDialog(null, "Seleccione una ruta y un bus");
-            return;
-        }
-
-        String modeloBus = modelo.getVista().txtModeloA.getText();
-        String capacidad = modelo.getVista().txtCapacidadA.getText();
-        String fechaAsignacion = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivoAsignRuta, true))) {
-            writer.write(idRuta + " | " + placa + " | " + modeloBus + " | " + capacidad + " | " + fechaAsignacion);
-            writer.newLine();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Error al guardar asignación");
-            return;
-        }
-
-        actualizarEstadoRuta(idRuta);
-        actualizarEstadoBus(placa);
-        actualizarEstadoConductor(placa);
-
-        JOptionPane.showMessageDialog(null, "Ruta asignada correctamente");
-        cargarRutas();
-        cargarBuses();
+    if (idRuta.isEmpty() || placa == null) {
+        JOptionPane.showMessageDialog(null, "Seleccione una ruta y un bus");
+        return;
     }
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivoAsignRuta, true))) {
+        writer.write(idRuta + " | " + origen + " | " + destino + " | " + horario + " | " + precio
+                + " | " + placa + " | " + modeloBus + " | " + capacidad + " | " + fechaAsignacion);
+        writer.newLine();
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(null, "Error al guardar asignación");
+        return;
+    }
+
+    actualizarEstadoRuta(idRuta);
+    actualizarEstadoBus(placa);
+    actualizarEstadoConductor(placa);
+
+    JOptionPane.showMessageDialog(null, "Ruta asignada correctamente");
+    cargarRutas();
+    cargarBuses();
+}
+
 
     public void actualizarEstadoRuta(String idRuta) {
         File temp = new File("rutasTemp.txt");
@@ -293,8 +329,8 @@ public class ControladorAsignarBus implements ActionListener {
 }
 private String obtenerPlacaDesdeAsignacion(String linea) {
     String[] datos = linea.split("\\|");
-    if (datos.length >= 2) {
-        return datos[1].trim();
+    if (datos.length >= 6) {
+        return datos[5].trim(); // Índice 5 contiene la placa
     }
     return "";
 }
@@ -327,7 +363,7 @@ private void actualizarEstadoBusDesasignado(String placa) {
         while ((linea = reader.readLine()) != null) {
             String[] datos = linea.split("\\|");
             if (datos.length >= 4 && datos[0].trim().equals(placa)) {
-                datos[3] = "Asignado"; // Vuelve a estado de asignado, pero no está en ruta
+                datos[3] = "Conductor Asignado";
             }
             writer.write(String.join(" | ", datos));
             writer.newLine();
@@ -338,6 +374,7 @@ private void actualizarEstadoBusDesasignado(String placa) {
     archivoBuses.delete();
     temp.renameTo(archivoBuses);
 }
+
 
 }
 

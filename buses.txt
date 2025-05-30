@@ -1,3 +1,4 @@
-fsdf                                                |                                                sdfsdf                                                |                                                40                                                | Ruta Asignada
-111                    |                    455666                    |                    50                    |  Ruta Asignada
-236dfg               |               2000               |               40               |          Disponible
+445FDA | 2013 Hyundai | 18 | En ruta
+356SDF | 2000 Coaster | 25 | En ruta
+365MNV | 2005 Hyundai | 40 | Disponible
+985DGH | 2025 Toyota | 50 | Disponible

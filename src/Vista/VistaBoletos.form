@@ -163,13 +163,13 @@
                                   <Component id="jLabel10" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtNombre" alignment="0" pref="100" max="32767" attributes="0"/>
-                                  <Component id="txtDPI" alignment="0" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="dcFecha" pref="190" max="32767" attributes="0"/>
                                   <Component id="txtTelefono" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="dcFecha" max="32767" attributes="0"/>
+                                  <Component id="txtDPI" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="txtNombre" alignment="0" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="22" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>

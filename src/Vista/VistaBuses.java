@@ -21,6 +21,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
         initComponents();
         ModeloBuses modelo = new ModeloBuses(this);
         ControladorBuses controlador = new ControladorBuses(modelo);
+
         setControlador(controlador);
           setLocationRelativeTo(null);
     }
@@ -139,7 +140,7 @@ VistaAsignarConductor va = new VistaAsignarConductor();
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel14.setText("Estado");
 
-        cbEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disponible", "Asignado", "En ruta", "Inactivo" }));
+        cbEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Disponible", "Inactivo" }));
         cbEstado.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbEstadoActionPerformed(evt);

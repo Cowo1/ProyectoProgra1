@@ -4,23 +4,28 @@
  */
 package Modelo;
 
-import Vista.VistaPasajeros;
-
 /**
  *
  * @author diego
  */
-public class ModeloPasajeros {
-    private VistaPasajeros vista;
-    
-    
 
-    public ModeloPasajeros(VistaPasajeros vista) {
+
+import Vista.VistaManual;
+
+public class ModeloManual {
+    private VistaManual vista;
+    private final String rutaManual = "docs/manual.pdf";
+
+    public ModeloManual(VistaManual vista) {
         this.vista = vista;
     }
 
-    public VistaPasajeros getVista() {
+    public VistaManual getVista() {
         return vista;
+    }
+
+    public String getRutaManual() {
+        return rutaManual;
     }
 }
 
