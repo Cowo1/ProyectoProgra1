@@ -1,7 +1,0 @@
-02 | Guastatoya | Guatemala | 23:52 | Q.50.00 | 445FDA | 2025-05-28 | diego | 2032654120202 | 51536541
-02 | Guastatoya | Guatemala | 23:52 | Q.50.00 | 445FDA | 2025-05-28 | carlos | 6532010250202 | 65325412
-01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2025-05-29 | Mario | 3654360250202 | 65413654
-01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2025-05-29 | carlos | 6523141470202 | 56314565
-01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2025-05-29 | jose | 6935146520202 | 65987412
-01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2025-05-29 | marcos | 65365202140202 | 63654789
-01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2025-05-29 | paco | 6356524810202 | 36521478
