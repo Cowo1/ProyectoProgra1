@@ -31,7 +31,7 @@ public class ControladorBoletos implements ActionListener {
         modelo.getVista().cmbRuta.addActionListener(this);
 
     }
-
+// Carga las rutas a un combobox
     private void cargarRutas() {
         modelo.getVista().cmbRuta.removeAllItems();
 
@@ -47,7 +47,7 @@ public class ControladorBoletos implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al cargar rutas disponibles");
         }
     }
-
+// Al seleccionar una ruta del combobox muestra los datos automaticamente
     private void mostrarDatosRuta(String origenSeleccionado) {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas))) {
             String linea;
@@ -67,7 +67,7 @@ public class ControladorBoletos implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al buscar datos de la ruta");
         }
     }
-
+// Muestra los datos del bus cuando se selecciona su ruta asignada
     private void mostrarDatosBusYAsientos(String codigoRuta) {
         try (BufferedReader reader = new BufferedReader(new FileReader("asignacion_ruta.txt"))) {
             String linea;
@@ -92,7 +92,7 @@ public class ControladorBoletos implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al leer asignación de bus a ruta.");
         }
     }
-
+//Registra la venta
     private void registrarVenta() {
         String nombre = modelo.getVista().txtNombre.getText().trim();
         String dpi = modelo.getVista().txtDPI.getText().trim();
@@ -150,22 +150,22 @@ public class ControladorBoletos implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Error al guardar pasajero");
             }
         }
-        // Verificar si la ruta sigue "Asignada"
+        
         if (!rutaAsignada(codigoRuta)) {
             JOptionPane.showMessageDialog(null, "Esta ruta ya no está disponible para ventas.");
-            cargarRutas(); // Opcional: refresca el comboBox
+            cargarRutas(); 
             return;
         }
 
-        // Actualizar capacidad, estados y limpiar
-        actualizarAsientos(placaBus, nuevoAsiento); // Actualiza archivo buses.txt
-        actualizarConductorYRuta(placaBus, codigoRuta, nuevoAsiento); // Cambia estado si capacidad == 0
+        
+        actualizarAsientos(placaBus, nuevoAsiento);
+        actualizarConductorYRuta(placaBus, codigoRuta, nuevoAsiento); 
         actualizarCapacidadAsignacion(placaBus, nuevoAsiento);
         JOptionPane.showMessageDialog(null, "Venta registrada correctamente");
         limpiarCampos();
         cargarRutas();
     }
-
+//Metodo para tomar las rutas con su estado asignada
     private boolean rutaAsignada(String codigoRuta) {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas))) {
             String linea;
@@ -180,7 +180,7 @@ public class ControladorBoletos implements ActionListener {
         }
         return false;
     }
-
+//Metodo para restar un asiento al bus cuando se realiza una venta
     private void actualizarCapacidadAsignacion(String placaBus, int nuevaCapacidad) {
         File archivoAsignacion = new File("asignacion_ruta.txt");
         File temp = new File("temp_asignacion.txt");
@@ -219,7 +219,7 @@ public class ControladorBoletos implements ActionListener {
         modelo.getVista().txtAsientos.setText("");
         modelo.getVista().cmbRuta.setSelectedIndex(-1);
     }
-
+//Actualiza asientos luego de una venta
     private void actualizarAsientos(String placaBus, int nuevoValor) {
         File temp = new File("temp_buses.txt");
 
@@ -244,10 +244,8 @@ public class ControladorBoletos implements ActionListener {
         archivoBuses.delete();
         temp.renameTo(archivoBuses);
     }
-
+//Actualiza el estado de conductor y ruta cuando el tiempo de salida del bus ya llego o cuando alcanza su capacidad
     private void actualizarConductorYRuta(String placaBus, String codigoRuta, int asientosRestantes) {
-        // Solo cambiar a En ruta si los asientos son 0
-
         File tempConductores = new File("temp_conductores.txt");
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoConductores)); BufferedWriter writer = new BufferedWriter(new FileWriter(tempConductores))) {
             String linea;
@@ -284,7 +282,7 @@ public class ControladorBoletos implements ActionListener {
         archivoRutas.delete();
         tempRutas.renameTo(archivoRutas);
     }
-
+//Verifica el pasajero si ya fue registrado o no
     private boolean pasajeroYaRegistrado(String dpi) {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoPasajeros))) {
             String linea;
@@ -299,7 +297,7 @@ public class ControladorBoletos implements ActionListener {
         }
         return false;
     }
-
+//Acciones de la ventana
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == modelo.getVista().cmbRuta) {

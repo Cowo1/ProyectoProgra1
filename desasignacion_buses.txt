@@ -4,3 +4,4 @@
 02 | Guastatoya | Guatemala | 23:00 | Q.50.00 | 445FDA |  |  | 2025-05-28 | 2025-05-28
 01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2000 Coaster | 25 | 2025-05-29 | 2025-05-29
 01 | gautemala | Antigua | 22:00 | Q.50.00 | 356SDF | 2000 Coaster | 25 | 2025-05-29 | 2025-05-29
+01 | gautemala | Antigua | 18:46 | Q.50.00 | 356SDF | 2000 Coaster | 25 | 2025-05-29 | 2025-05-30

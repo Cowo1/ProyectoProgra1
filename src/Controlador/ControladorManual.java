@@ -53,7 +53,7 @@ public class ControladorManual implements ActionListener {
             descargarManual();
         }
     }
-
+//Metodo para abrir el manual automaticamentre
     private void abrirManual() {
         try {
             File archivo = new File(modelo.getRutaManual());
@@ -74,7 +74,7 @@ public class ControladorManual implements ActionListener {
                     "Error al abrir el manual: " + ex.getMessage());
         }
     }
-
+//Elejor donde descargar el manual y descargarlo
     private void descargarManual() {
         try {
             JFileChooser fileChooser = new JFileChooser();

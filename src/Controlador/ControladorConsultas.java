@@ -36,7 +36,7 @@ public class ControladorConsultas implements ActionListener {
             String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split("\\|");
-                if (datos.length >= 6 && datos[5].trim().equalsIgnoreCase("Asignada")|| datos[5].trim().equalsIgnoreCase("Ocupada")) {
+                if (datos.length >= 6 && datos[5].trim().equalsIgnoreCase("Asignada") || datos[5].trim().equalsIgnoreCase("Ocupada")) {
                     modelo.getVista().cmbRuta.addItem(datos[1].trim());  // Origen
                 }
             }
@@ -46,75 +46,69 @@ public class ControladorConsultas implements ActionListener {
     }
 
     // Mostrar datos en tabla al seleccionar una ruta
-   private void mostrarDatosRuta(String origenSeleccionado) {
-    try (
-        BufferedReader readerRuta = new BufferedReader(new FileReader(archivoRutas));
-        BufferedReader readerAsignacion = new BufferedReader(new FileReader(archivoAsignaciones))
-    ) {
-        String idRuta = "", destino = "", horario = "", precio = "", estado = "";
+    private void mostrarDatosRuta(String origenSeleccionado) {
+        try (
+                BufferedReader readerRuta = new BufferedReader(new FileReader(archivoRutas)); BufferedReader readerAsignacion = new BufferedReader(new FileReader(archivoAsignaciones))) {
+            String idRuta = "", destino = "", horario = "", precio = "", estado = "";
 
-        // Buscar en archivo rutas.txt
-        String linea;
-        while ((linea = readerRuta.readLine()) != null) {
-            String[] datos = linea.split("\\|");
-            if (datos.length >= 6 && datos[1].trim().equals(origenSeleccionado)) {
-                idRuta = datos[0].trim();
-                destino = datos[2].trim();
-                horario = datos[3].trim();
-                precio = datos[4].trim();
-                estado = datos[5].trim();
+            String linea;
+            while ((linea = readerRuta.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length >= 6 && datos[1].trim().equals(origenSeleccionado)) {
+                    idRuta = datos[0].trim();
+                    destino = datos[2].trim();
+                    horario = datos[3].trim();
+                    precio = datos[4].trim();
+                    estado = datos[5].trim();
 
-                modelo.getVista().txtDestino.setText(destino);
-                modelo.getVista().txtHorario.setText(horario);
+                    modelo.getVista().txtDestino.setText(destino);
+                    modelo.getVista().txtHorario.setText(horario);
 
-                // Mostrar mensaje de disponibilidad
-               if (estado.equalsIgnoreCase("Asignada")) {
-    modelo.getVista().lblEstadoRuta.setText("Disponible");
-    modelo.getVista().lblEstadoRuta.setForeground(new Color(0, 128, 0)); // Verde oscuro
-} else if (estado.equalsIgnoreCase("Ocupada")) {
-    modelo.getVista().lblEstadoRuta.setText("No hay disponibilidad");
-    modelo.getVista().lblEstadoRuta.setForeground(Color.RED); // Rojo
-} else {
-    modelo.getVista().lblEstadoRuta.setText("Estado desconocido");
-    modelo.getVista().lblEstadoRuta.setForeground(Color.GRAY);
-}
-                break;
+                    if (estado.equalsIgnoreCase("Asignada")) {
+                        modelo.getVista().lblEstadoRuta.setText("Disponible");
+                        modelo.getVista().lblEstadoRuta.setForeground(new Color(0, 128, 0));
+                    } else if (estado.equalsIgnoreCase("Ocupada")) {
+                        modelo.getVista().lblEstadoRuta.setText("No hay disponibilidad");
+                        modelo.getVista().lblEstadoRuta.setForeground(Color.RED);
+                    } else {
+                        modelo.getVista().lblEstadoRuta.setText("Estado desconocido");
+                        modelo.getVista().lblEstadoRuta.setForeground(Color.GRAY);
+                    }
+                    break;
+                }
             }
-        }
 
-        // Buscar en archivo asignacion_ruta.txt usando el idRuta
-        while ((linea = readerAsignacion.readLine()) != null) {
-            String[] datos = linea.split("\\|");
-            if (datos.length >= 9 && datos[0].trim().equals(idRuta)) {
-                String origen = datos[1].trim();
-                String placa = datos[5].trim();
-                String modeloBus = datos[6].trim();
-                String capacidad = datos[7].trim();
-                String fechaAsignacion = datos[8].trim();
+            while ((linea = readerAsignacion.readLine()) != null) {
+                String[] datos = linea.split("\\|");
+                if (datos.length >= 9 && datos[0].trim().equals(idRuta)) {
+                    String origen = datos[1].trim();
+                    String placa = datos[5].trim();
+                    String modeloBus = datos[6].trim();
+                    String capacidad = datos[7].trim();
+                    String fechaAsignacion = datos[8].trim();
 
-                modelo.getVista().txtPlacaBus.setText(placa);
-                modelo.getVista().txtAsientosDisponibles.setText(capacidad);
+                    modelo.getVista().txtPlacaBus.setText(placa);
+                    modelo.getVista().txtAsientosDisponibles.setText(capacidad);
 
-                DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConsultaRuta.getModel();
-                model.setRowCount(0);
-                model.addRow(new Object[]{
-                    idRuta, origen, destino, horario, precio,
-                    placa, modeloBus, capacidad, fechaAsignacion
-                });
+                    DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConsultaRuta.getModel();
+                    model.setRowCount(0);
+                    model.addRow(new Object[]{
+                        idRuta, origen, destino, horario, precio,
+                        placa, modeloBus, capacidad, fechaAsignacion
+                    });
 
-                return;
+                    return;
+                }
             }
+
+            modelo.getVista().txtPlacaBus.setText("");
+            modelo.getVista().txtAsientosDisponibles.setText("");
+            JOptionPane.showMessageDialog(null, "No se encontró un bus asignado a esta ruta.");
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al buscar los datos.");
         }
-
-        modelo.getVista().txtPlacaBus.setText("");
-        modelo.getVista().txtAsientosDisponibles.setText("");
-        JOptionPane.showMessageDialog(null, "No se encontró un bus asignado a esta ruta.");
-
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(null, "Error al buscar los datos.");
     }
-}
-
 
     @Override
     public void actionPerformed(ActionEvent e) {

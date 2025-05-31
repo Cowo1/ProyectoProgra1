@@ -31,6 +31,7 @@ public class ControladorReportesV implements ActionListener {
         
         cargarTabla();
     }
+    // Maneja el evento del botón "Generar", que exporta el reporte de conductores a un archivo Excel
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -38,6 +39,7 @@ public class ControladorReportesV implements ActionListener {
             exportarExcel();
         }
     }
+// Carga los datos de las ventas desde el archivo y las muestra en la tabla de la vista
 
     public void cargarTabla() {
         DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblVentasR.getModel();
@@ -59,6 +61,7 @@ public class ControladorReportesV implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al cargar los datos de ventas.");
         }
     }
+// Exporta los datos de las ventas a un archivo Excel con formato .xlsx
 
     public void exportarExcel() {
         String[] columnas = {

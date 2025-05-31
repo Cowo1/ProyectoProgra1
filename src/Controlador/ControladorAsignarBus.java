@@ -48,6 +48,7 @@ public class ControladorAsignarBus implements ActionListener {
 
       
     }
+    //Muestra los datos en el combobox
 public void mostrarDatosB(String placa) {
         try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
             String linea;
@@ -68,6 +69,7 @@ public void mostrarDatosB(String placa) {
             JOptionPane.showMessageDialog(null, "Error al buscar los datos del autobús.");
         }
     }
+//Carga las rutas en estado activa y asignada
     public void cargarRutas() {
         DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblRutasA.getModel();
         model.setRowCount(0);
@@ -89,7 +91,8 @@ public void mostrarDatosB(String placa) {
             JOptionPane.showMessageDialog(null, "Error al cargar rutas");
         }
     }
-
+    
+    //Carga los buses en estado Conductor Asignado
   public void cargarBuses() {
     modelo.getVista().cmbBusesA.removeAllItems();
 
@@ -113,7 +116,7 @@ public void mostrarDatosB(String placa) {
     }
 }
 
-
+//Muestra los datos de la ruta al ser selecconada o al buscar su codigo
     public void mostrarDatosRuta(String codigo) {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas))) {
             String linea;
@@ -131,7 +134,7 @@ public void mostrarDatosB(String placa) {
             JOptionPane.showMessageDialog(null, "Error al mostrar datos de la ruta");
         }
     }
-
+//Muestra los datos del bus tomando las placas
     public void mostrarDatosBus(String placa) {
           
         try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
@@ -153,14 +156,14 @@ public void mostrarDatosB(String placa) {
         
     }
     
-
+//Metodo para los botones
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == modelo.getVista().btnAsignar) {
             asignarBusARuta();
         }
     }
-
+//Metodo para asignar la ruta y actualizar su estado junto con el del bus
    public void asignarBusARuta() {
     String idRuta = modelo.getVista().txtCodigoR.getText().trim();
     String origen = modelo.getVista().txtOrigenR.getText().trim();
@@ -195,7 +198,7 @@ public void mostrarDatosB(String placa) {
     cargarBuses();
 }
 
-
+//Metodo para actualizar el estado de la ruta despues de asignarla
     public void actualizarEstadoRuta(String idRuta) {
         File temp = new File("rutasTemp.txt");
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas));
@@ -215,7 +218,7 @@ public void mostrarDatosB(String placa) {
         archivoRutas.delete();
         temp.renameTo(archivoRutas);
     }
-
+//Metodo para actualizar el estado del luego de ser asignado
     public void actualizarEstadoBus(String placa) {
         File temp = new File("busesTemp.txt");
         try (BufferedReader reader = new BufferedReader(new FileReader(archivoBuses));
@@ -235,7 +238,7 @@ public void mostrarDatosB(String placa) {
         archivoBuses.delete();
         temp.renameTo(archivoBuses);
     }
-
+//Actualiza el estado del conductor al asignar la ruta al bus que tiene asignado
    public void actualizarEstadoConductor(String placaBus) {
     String codigo = "";
     try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
@@ -271,7 +274,7 @@ public void mostrarDatosB(String placa) {
         temp.renameTo(new File("conductores.txt"));
     }
 }
-
+//Desasigna el bus
     public void desasignarBusDeRuta() {
     String idRuta = modelo.getVista().txtCodigoR.getText().trim();
 
@@ -327,14 +330,15 @@ public void mostrarDatosB(String placa) {
         JOptionPane.showMessageDialog(null, "Error al actualizar las asignaciones.");
     }
 }
+    //Metodo para optener la placa asignada
 private String obtenerPlacaDesdeAsignacion(String linea) {
     String[] datos = linea.split("\\|");
     if (datos.length >= 6) {
-        return datos[5].trim(); // Índice 5 contiene la placa
+        return datos[5].trim();
     }
     return "";
 }
-
+//Actualiza el estado de la ruta al ser desasignada
 private void actualizarEstadoRutaDesasignada(String idRuta) {
     File temp = new File("rutas_temp.txt");
     try (BufferedReader reader = new BufferedReader(new FileReader(archivoRutas));
@@ -354,7 +358,7 @@ private void actualizarEstadoRutaDesasignada(String idRuta) {
     archivoRutas.delete();
     temp.renameTo(archivoRutas);
 }
-
+//Actualiza el estado del bus al ser desasignado
 private void actualizarEstadoBusDesasignado(String placa) {
     File temp = new File("buses_temp.txt");
     try (BufferedReader reader = new BufferedReader(new FileReader(archivoBuses));

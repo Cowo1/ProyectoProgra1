@@ -33,7 +33,7 @@ import javax.swing.table.DefaultTableModel;
 public class ControladorAsignacion implements ActionListener {
 
     private ModeloAsignacion modelo;
-
+//Inicializacion de archivos que se utilizaran en la ventana
     private File archivoConductores = new File("conductores.txt");
     private File archivoBuses = new File("buses.txt");
     private File archivoAsignaciones = new File("asignaciones.txt");
@@ -75,6 +75,8 @@ public class ControladorAsignacion implements ActionListener {
 
      
     }
+    
+    //Carga los conductores en la tabla, solo apareceran los que tiene un estado "Disponible" o "Asignado"
                 
     public void cargarConductores() {
         DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConductoresA.getModel();
@@ -108,7 +110,7 @@ public class ControladorAsignacion implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al cargar conductores disponibles.");
         }
     }
-
+//Carga los nuses sin conductor asignado o sea con su estado "Disponible",carga las placas en un ComboBox
     public void cargarBuses() {
         modelo.getVista().cmbBusesA.removeAllItems();
 
@@ -125,6 +127,7 @@ public class ControladorAsignacion implements ActionListener {
         }
     }
 
+    // Asigna un conductor condforme su codigo y la placa de bus y cambia su estado al asignar, el conductor pasa de disponible a "Asignado" y el bus pasa de Disponible a "Conductor Asignado"
     public void asignarConductor() {
         int fila = modelo.getVista().tblConductoresA.getSelectedRow();
         String placa = (String) modelo.getVista().cmbBusesA.getSelectedItem();
@@ -155,6 +158,7 @@ public class ControladorAsignacion implements ActionListener {
         limpiar();
     }
 
+    //Desasigna el conductor a un autobus, para que esto ocurra deben haber sido asignados anteriormente
     public void desasignarConductor() {
     String codigo = modelo.getVista().txtCodigo.getText().trim();
     String placa = modelo.getVista().txtPlacaA.getText().trim();
@@ -169,7 +173,7 @@ public class ControladorAsignacion implements ActionListener {
         return;
     }
 
-    // Paso 1: mover línea de asignaciones.txt a desasignaciones.txt
+    
     File archivoTemporal = new File("asignacionesTemp.txt");
     File archivoAsignaciones = new File("asignaciones.txt");
     File archivoDesasignaciones = new File("desasignaciones.txt");
@@ -186,7 +190,7 @@ public class ControladorAsignacion implements ActionListener {
                 // Es la asignación a eliminar, la guardamos en desasignaciones.txt
                 writerDesasignaciones.write(linea + " | " + new SimpleDateFormat("yyyy-MM-dd").format(new Date())); // agregamos fecha de desasignación
                 writerDesasignaciones.newLine();
-                continue; // no escribir en el nuevo archivo
+                continue; 
             }
             writer.write(linea);
             writer.newLine();
@@ -197,7 +201,7 @@ public class ControladorAsignacion implements ActionListener {
         return;
     }
 
-    // Reemplazar archivo original
+  
     if (archivoAsignaciones.delete() && archivoTemporal.renameTo(archivoAsignaciones)) {
         actualizarConductor(codigo, "Disponible");
         actualizarBus(placa, "Disponible");
@@ -211,7 +215,7 @@ public class ControladorAsignacion implements ActionListener {
     }
 }
 
-
+// Metodo de actualizar para hacer el cambio en los archivos
     public void actualizarConductor(String codigo, String nuevoE) {
         File temporal = new File("conductoresTemp.txt");
 
@@ -234,7 +238,7 @@ public class ControladorAsignacion implements ActionListener {
         archivoConductores.delete();
         temporal.renameTo(archivoConductores);
     }
-
+// Metodo de actualizar para hacer el cambio en los archivos
     public void actualizarBus(String placa, String nuevoE) {
         File temporal = new File("busesTemp.txt");
 
@@ -257,7 +261,7 @@ public class ControladorAsignacion implements ActionListener {
         archivoBuses.delete();
         temporal.renameTo(archivoBuses);
     }
-
+// Elimina las asignaciones en el archivo
     public void eliminarAsignacion(String codigo) {
         File temporal = new File("asignacionesTemp.txt");
 
@@ -279,7 +283,7 @@ public class ControladorAsignacion implements ActionListener {
         archivoAsignaciones.delete();
         temporal.renameTo(archivoAsignaciones);
     }
-
+//Se encarga de mostrar los datos cuando es seleccionado una placa del combobox
     public void mostrarDatosB(String placa) {
         try (BufferedReader reader = new BufferedReader(new FileReader("buses.txt"))) {
             String linea;
@@ -300,7 +304,8 @@ public class ControladorAsignacion implements ActionListener {
             JOptionPane.showMessageDialog(null, "Error al buscar los datos del autobús.");
         }
     }
-
+    
+//Acciones realizadas por notones en el JFrame
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == modelo.getVista().btnAsignar) {
@@ -309,6 +314,7 @@ public class ControladorAsignacion implements ActionListener {
             desasignarConductor();
         }
     }
+    
     public void mostrarBusAsignado(String codigoConductor) {
     String placaBus = "Sin asignación";
 
@@ -317,7 +323,7 @@ public class ControladorAsignacion implements ActionListener {
         while ((linea = reader.readLine()) != null) {
             String[] datos = linea.split("\\|");
             if (datos.length >= 3 && datos[0].trim().equals(codigoConductor)) {
-                placaBus = datos[2].trim(); // La placa del bus asignado
+                placaBus = datos[2].trim(); 
                 break;
             }
         }
@@ -327,31 +333,28 @@ public class ControladorAsignacion implements ActionListener {
 
   
 }
+    // Metodo para limpiar los campos
     public void limpiar() {
-    // Limpiar campo de código
-    modelo.getVista().txtCodigo.setText("");
-
-    // Limpiar campo de autobús asignado (JTextField)
+    modelo.getVista().txtCodigo.setText("");  
     modelo.getVista().txtPlacaA.setText("");
-
-    // Deseleccionar item en el combo de buses disponibles, sin agregar espacios en blanco
     if (modelo.getVista().cmbBusesA.getItemCount() > 0) {
         modelo.getVista().cmbBusesA.setSelectedIndex(-1);
     }
 }
+    //Muestra los buses asignados para desasignarlos
 public String obtenerBusAsignado(String codigo) {
     try (BufferedReader reader = new BufferedReader(new FileReader(archivoAsignaciones))) {
         String linea;
         while ((linea = reader.readLine()) != null) {
             String[] datos = linea.split("\\|");
             if (datos.length >= 3 && datos[0].trim().equals(codigo)) {
-                return datos[2].trim(); // Placa del bus asignado
+                return datos[2].trim();
             }
         }
     } catch (IOException e) {
         JOptionPane.showMessageDialog(null, "Error al buscar bus asignado.");
     }
-    return null; // No tiene asignación
+    return null; 
 }
 
 

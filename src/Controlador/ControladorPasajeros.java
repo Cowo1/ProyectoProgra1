@@ -40,85 +40,89 @@ public class ControladorPasajeros implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == modelo.getVista().btnBuscar) {
-            buscarPasajero();
-        } else if (e.getSource() == modelo.getVista().btnEliminar) {
-            eliminarPasajero();
-            cargarTabla();
-        } else if (e.getSource() == modelo.getVista().btnLimpiar) {
-            limpiarCampos();
-        }if (e.getSource() == modelo.getVista().btnEliminarF) {
-    eliminarFilaSeleccionada();
+    // Maneja los eventos de los botones en la interfaz de pasajeros
+public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == modelo.getVista().btnBuscar) {
+        buscarPasajero();
+    } else if (e.getSource() == modelo.getVista().btnEliminar) {
+        eliminarPasajero();
+        cargarTabla();
+    } else if (e.getSource() == modelo.getVista().btnLimpiar) {
+        limpiarCampos();
+    }
+    if (e.getSource() == modelo.getVista().btnEliminarF) {
+        eliminarFilaSeleccionada();
+    }
 }
 
-    }
+// Carga todos los pasajeros desde el archivo y los muestra en la tabla
+public void cargarTabla() {
+    DefaultTableModel modeloTabla = (DefaultTableModel) modelo.getVista().tblPasajeros.getModel();
+    modeloTabla.setRowCount(0);
 
-    public void cargarTabla() {
-        DefaultTableModel modeloTabla = (DefaultTableModel) modelo.getVista().tblPasajeros.getModel();
-        modeloTabla.setRowCount(0); // limpiar tabla
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivoPasajeros))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split("\\|");
-                if (datos.length == 4) {
-                    Object[] fila = new Object[4];
-                    for (int i = 0; i < 4; i++) {
-                        fila[i] = datos[i].trim();
-                    }
-                    modeloTabla.addRow(fila);
+    try (BufferedReader br = new BufferedReader(new FileReader(archivoPasajeros))) {
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length == 4) {
+                Object[] fila = new Object[4];
+                for (int i = 0; i < 4; i++) {
+                    fila[i] = datos[i].trim();
                 }
+                modeloTabla.addRow(fila);
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
+    } catch (IOException ex) {
+        ex.printStackTrace();
+    }
+}
+
+// Llena los campos de texto con los datos de la fila seleccionada en la tabla
+private void llenarCamposDesdeTabla() {
+    int fila = modelo.getVista().tblPasajeros.getSelectedRow();
+    if (fila != -1) {
+        JTable tabla = modelo.getVista().tblPasajeros;
+        modelo.getVista().txtNombre.setText(tabla.getValueAt(fila, 0).toString());
+        modelo.getVista().txtDpi.setText(tabla.getValueAt(fila, 1).toString());
+        modelo.getVista().txtTelefono.setText(tabla.getValueAt(fila, 2).toString());
+        modelo.getVista().txtFechaDeViaje.setText(tabla.getValueAt(fila, 3).toString());
+    }
+}
+
+// Busca un pasajero por su DPI y muestra sus datos en los campos correspondientes
+private void buscarPasajero() {
+    String dpi = modelo.getVista().txtDpi.getText().trim();
+    if (dpi.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Ingrese un DPI para buscar.");
+        return;
     }
 
-    private void llenarCamposDesdeTabla() {
-        int fila = modelo.getVista().tblPasajeros.getSelectedRow();
-        if (fila != -1) {
-            JTable tabla = modelo.getVista().tblPasajeros;
-            modelo.getVista().txtNombre.setText(tabla.getValueAt(fila, 0).toString());
-            modelo.getVista().txtDpi.setText(tabla.getValueAt(fila, 1).toString());
-            modelo.getVista().txtTelefono.setText(tabla.getValueAt(fila, 2).toString());         
-            modelo.getVista().txtFechaDeViaje.setText(tabla.getValueAt(fila, 3).toString());
-        }
-    }
+    try (BufferedReader br = new BufferedReader(new FileReader(archivoPasajeros))) {
+        String linea;
+        boolean encontrado = false;
 
-    private void buscarPasajero() {
-        String dpi = modelo.getVista().txtDpi.getText().trim();
-        if (dpi.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Ingrese un DPI para buscar.");
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivoPasajeros))) {
-            String linea;
-            boolean encontrado = false;
-
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split("\\|");
-                if (datos.length == 4 && datos[1].trim().equals(dpi)) {
-                     modelo.getVista().txtNombre.setText(datos[0].trim());
-                    modelo.getVista().txtTelefono.setText(datos[2].trim());
-                   
-                    modelo.getVista().txtFechaDeViaje.setText(datos[3].trim());
-                    encontrado = true;
-                    break;
-                }
+        while ((linea = br.readLine()) != null) {
+            String[] datos = linea.split("\\|");
+            if (datos.length == 4 && datos[1].trim().equals(dpi)) {
+                modelo.getVista().txtNombre.setText(datos[0].trim());
+                modelo.getVista().txtTelefono.setText(datos[2].trim());
+                modelo.getVista().txtFechaDeViaje.setText(datos[3].trim());
+                encontrado = true;
+                break;
             }
-
-            if (!encontrado) {
-                JOptionPane.showMessageDialog(null, "Pasajero no encontrado.");
-            }
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
-    }
 
-    private void eliminarPasajero() {
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(null, "Pasajero no encontrado.");
+        }
+
+    } catch (IOException ex) {
+        ex.printStackTrace();
+    }
+}
+
+// Elimina un pasajero del archivo según su DPI ingresado en el campo de texto
+private void eliminarPasajero() {
     String dpi = modelo.getVista().txtDpi.getText().trim();
 
     if (dpi.isEmpty()) {
@@ -128,7 +132,6 @@ public class ControladorPasajeros implements ActionListener {
 
     File archivoOriginal = new File("pasajeros.txt").getAbsoluteFile();
     File archivoTemporal = new File("pasajeros_temp.txt").getAbsoluteFile();
-
     boolean eliminado = false;
 
     try (
@@ -141,7 +144,7 @@ public class ControladorPasajeros implements ActionListener {
             String[] datos = linea.split("\\|");
 
             if (datos.length > 1) {
-                String dpiArchivo = datos[1].trim(); 
+                String dpiArchivo = datos[1].trim();
                 if (!dpiArchivo.equals(dpi)) {
                     bw.write(linea);
                     bw.newLine();
@@ -149,7 +152,6 @@ public class ControladorPasajeros implements ActionListener {
                     eliminado = true;
                 }
             } else {
-               
                 bw.write(linea);
                 bw.newLine();
             }
@@ -179,16 +181,17 @@ public class ControladorPasajeros implements ActionListener {
     }
 }
 
+// Limpia todos los campos de entrada y la selección de la tabla
+private void limpiarCampos() {
+    modelo.getVista().txtDpi.setText("");
+    modelo.getVista().txtTelefono.setText("");
+    modelo.getVista().txtNombre.setText("");
+    modelo.getVista().txtFechaDeViaje.setText("");
+    modelo.getVista().tblPasajeros.clearSelection();
+}
 
-    private void limpiarCampos() {
-        modelo.getVista().txtDpi.setText("");
-        modelo.getVista().txtTelefono.setText("");
-        modelo.getVista().txtNombre.setText("");
-        
-        modelo.getVista().txtFechaDeViaje.setText("");
-        modelo.getVista().tblPasajeros.clearSelection();
-    }
-    public void eliminarFilaSeleccionada() {
+// Elimina el pasajero seleccionado en la tabla basándose en su DPI
+public void eliminarFilaSeleccionada() {
     int fila = modelo.getVista().tblPasajeros.getSelectedRow();
 
     if (fila == -1) {
@@ -196,9 +199,7 @@ public class ControladorPasajeros implements ActionListener {
         return;
     }
 
-    // Obtener el DPI desde la fila seleccionada
     String dpiSeleccionado = modelo.getVista().tblPasajeros.getValueAt(fila, 1).toString();
-
     File temporal = new File("temporal.txt");
 
     try (
@@ -211,7 +212,6 @@ public class ControladorPasajeros implements ActionListener {
         while ((linea = br.readLine()) != null) {
             String[] datos = linea.split("\\|");
 
-            // Saltar líneas mal formateadas
             if (datos.length != 4) {
                 bw.write(linea);
                 bw.newLine();
@@ -248,6 +248,7 @@ public class ControladorPasajeros implements ActionListener {
         JOptionPane.showMessageDialog(null, "Error al eliminar el pasajero.");
     }
 }
+
 
 }
 

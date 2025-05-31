@@ -43,14 +43,15 @@ public class ControladorReportes implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == modelo.getVista().btnGenerar){
-            exportarExcel();
-        }
+    // Maneja el evento del botón "Generar", que exporta el reporte de conductores a un archivo Excel
+public void actionPerformed(ActionEvent e) {
+    if (e.getSource() == modelo.getVista().btnGenerar) {
+        exportarExcel();
     }
+}
 
-
-    public void cargarTabla() {
+// Carga los datos de los conductores desde el archivo y los muestra en la tabla de la vista
+public void cargarTabla() {
     DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblConductoresR.getModel();
     model.setRowCount(0);
 
@@ -67,7 +68,6 @@ public class ControladorReportes implements ActionListener {
                 String vencimiento = datos[8].trim();
                 String estado = datos[7].trim();
                 String fechaIngreso = datos[9].trim();
-
                 String placaBus = obtenerPlacaBusAsignado(codigo);
 
                 model.addRow(new Object[]{
@@ -80,18 +80,18 @@ public class ControladorReportes implements ActionListener {
     }
 }
 
-  public void exportarExcel() {
+// Exporta los datos de los conductores a un archivo Excel con formato .xlsx
+public void exportarExcel() {
     String[] columnas = { "Código", "Nombre", "Teléfono", "Licencia", "Tipo", "Fecha Ingreso", "Estado", "Vencimiento", "Placa Bus" };
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    // Selector de archivo
     JFileChooser fileChooser = new JFileChooser();
     fileChooser.setDialogTitle("Guardar Reporte de Conductores");
     fileChooser.setSelectedFile(new File("Reporte Conductores (" + sdf.format(new Date()) + ").xlsx"));
     int seleccion = fileChooser.showSaveDialog(null);
 
     if (seleccion != JFileChooser.APPROVE_OPTION) {
-        return; // el usuario canceló
+        return;
     }
 
     File archivo = fileChooser.getSelectedFile();
@@ -154,20 +154,20 @@ public class ControladorReportes implements ActionListener {
     }
 }
 
-
-        public String obtenerPlacaBusAsignado(String codigoConductor) {
+// Obtiene la placa del bus asignado a un conductor a partir de su código, si existe una asignación
+public String obtenerPlacaBusAsignado(String codigoConductor) {
     try (BufferedReader reader = new BufferedReader(new FileReader("asignaciones.txt"))) {
         String linea;
         while ((linea = reader.readLine()) != null) {
             String[] datos = linea.split("\\|");
             if (datos.length >= 3 && datos[0].trim().equals(codigoConductor)) {
-                return datos[2].trim(); // Placa del bus
+                return datos[2].trim();
             }
         }
     } catch (IOException e) {
-        // puedes mostrar un mensaje o manejar el error
     }
     return "-----";
-        }
+}
+
         
     }

@@ -42,7 +42,7 @@ public class ControladorPrincipal implements ActionListener, MouseListener {
     
     private ModeloPrincipal modelo;
     
-    
+    //Metodo que maneja las acciones enla ventana
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -156,6 +156,7 @@ public class ControladorPrincipal implements ActionListener, MouseListener {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
+    //Metodo para cargar las rutas que estan en funcionamiento en la tabla de la vista principal
     public void cargarRutas() {
     DefaultTableModel model = (DefaultTableModel) modelo.getVista().tblResumen.getModel();
     model.setRowCount(0); // Limpiar tabla
